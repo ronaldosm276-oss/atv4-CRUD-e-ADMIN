@@ -38,5 +38,10 @@ export interface Atendimento {
   idPessoa: number; pessoa: string; itens: AtendimentoItemResposta[]; valorTotal: number;
 }
 
+export interface EstoqueResposta {
+  idItem: number; item: string; descricaoItem: string; preco: number; precoVenda: number;
+  unidade: string; categoria: string; quantidadeEstoque: number; ativoProdutoServico: string;
+}
+
 export interface EntradaEnvio { idEntradaProduto: number; idItem: number; dataEntradaProduto: string; quantidadeEntrada: number; unidade: string; valorUnitarioEntrada: number; }
 export interface EntradaResposta extends EntradaEnvio { item: string; quantidadeEstoqueAtual: number; precoVenda: number; }

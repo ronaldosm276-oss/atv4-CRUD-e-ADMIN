@@ -1,1 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
+
+:root { --verde: #234038; --fundo: #d9ded8; --papel: #fff; --texto: #1f2a27; --erro: #b00020; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, sans-serif; color: var(--texto); background: var(--fundo); }
+.topo { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  padding: .75rem 1.5rem; background: var(--verde); color: #fff; }
+.topo nav { display: flex; gap: .25rem; flex-wrap: wrap; }
+.topo a { color: #fff; text-decoration: none; padding: .25rem .6rem; border-radius: 4px; }
+.topo a.ativo { background: rgba(255, 255, 255, .2); }
+.marca { font-weight: 700; font-size: 1.2rem; }
+.conteudo { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; min-height: 70vh; }
+.rodape { background: var(--verde); color: #fff; text-align: center; padding: 1rem; font-size: .85rem; }
