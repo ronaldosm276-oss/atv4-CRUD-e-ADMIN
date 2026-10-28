@@ -1,0 +1,60 @@
+<h1>Estoque</h1>
+
+<section class="painel">
+  <form class="busca" (submit)="$event.preventDefault(); consultar()">
+    <label class="campo">
+      Consultar pelo ID do item
+      <input type="text" inputmode="numeric" [formControl]="busca" placeholder="Ex.: 21">
+    </label>
+    <button type="submit" class="botao">Consultar</button>
+    @if (modoBusca()) {
+      <button type="button" class="botao secundario" (click)="voltar()">Ver todo o estoque</button>
+    }
+  </form>
+</section>
+
+@if (carregando()) {
+  <p class="painel vazio">Carregando estoque...</p>
+} @else if (erro()) {
+  <div class="painel vazio erro-painel">
+    <p>{{ erro() }}</p>
+    <button type="button" class="botao" (click)="carregar()">Tentar novamente</button>
+  </div>
+} @else if (itens().length === 0) {
+  <p class="painel vazio">Nenhum item em estoque.</p>
+} @else {
+  <section class="painel">
+    <div class="tabela-rolagem">
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th class="num">ID</th>
+            <th>Item</th>
+            <th>Descrição</th>
+            <th class="num">Preço</th>
+            <th class="num">Preço de venda</th>
+            <th>Unidade</th>
+            <th>Categoria</th>
+            <th class="num">Em estoque</th>
+            <th>Ativo</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (i of itens(); track i.idItem) {
+            <tr>
+              <td class="num">{{ i.idItem }}</td>
+              <td>{{ i.item }}</td>
+              <td class="descricao">{{ i.descricaoItem }}</td>
+              <td class="num">{{ i.preco | moeda }}</td>
+              <td class="num">{{ i.precoVenda | moeda }}</td>
+              <td>{{ i.unidade }}</td>
+              <td>{{ i.categoria }}</td>
+              <td class="num"><strong>{{ i.quantidadeEstoque }}</strong></td>
+              <td>{{ i.ativoProdutoServico === 'S' ? 'Sim' : 'Não' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+}

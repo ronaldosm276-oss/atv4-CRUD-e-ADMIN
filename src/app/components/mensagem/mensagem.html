@@ -1,0 +1,5 @@
+@if (servico.atual(); as aviso) {
+  <div class="aviso" [class.erro]="aviso.tipo === 'erro'" role="alert" (click)="servico.fechar()">
+    {{ aviso.texto }}
+  </div>
+}

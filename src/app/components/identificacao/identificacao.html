@@ -1,0 +1,10 @@
+<form class="identificacao" (submit)="$event.preventDefault(); entrar()">
+  <label class="campo">
+    CPF ou e-mail
+    <input type="text" [formControl]="campo" placeholder="000.000.000-00 ou nome@email.com" autocomplete="off">
+    @if (campo.invalid && campo.touched) {
+      <small class="erro">Informe o CPF ou o e-mail.</small>
+    }
+  </label>
+  <button type="submit" class="botao" [disabled]="buscando()">{{ buscando() ? 'Buscando...' : 'Entrar' }}</button>
+</form>

@@ -1,0 +1,105 @@
+<h1>Pedidos</h1>
+
+<section class="painel">
+  <div class="barra">
+    <div class="chips" role="group" aria-label="Filtrar por situação">
+      @for (o of opcoes; track o.valor) {
+        <button type="button" [class.ativo]="!modoBusca() && filtro() === o.valor" (click)="escolherFiltro(o.valor)">
+          {{ o.rotulo }}
+        </button>
+      }
+    </div>
+
+    <form class="busca" (submit)="$event.preventDefault(); buscar()">
+      <input type="text" inputmode="numeric" [formControl]="busca" placeholder="Nº do pedido" aria-label="Número do pedido">
+      <button type="submit" class="botao pequeno">Abrir pedido</button>
+    </form>
+  </div>
+
+  @if (modoBusca()) {
+    <p class="aviso-busca">
+      Mostrando o resultado da busca pelo número do pedido.
+      <button type="button" class="botao secundario pequeno" (click)="voltar()">Voltar à lista</button>
+    </p>
+  }
+</section>
+
+@if (carregando()) {
+  <p class="painel vazio">Carregando pedidos...</p>
+} @else if (erro()) {
+  <div class="painel vazio erro-painel">
+    <p>{{ erro() }}</p>
+    <button type="button" class="botao" (click)="carregar()">Tentar novamente</button>
+  </div>
+} @else if (pedidos().length === 0) {
+  <p class="painel vazio">Nenhum pedido encontrado.</p>
+} @else {
+  <section class="painel">
+    <div class="tabela-rolagem">
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th>Pedido</th>
+            <th>Cliente</th>
+            <th>Data</th>
+            <th class="num">Valor total</th>
+            <th>Situação</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of pedidos(); track p.idAtendimento) {
+            <tr>
+              <td>nº {{ p.idAtendimento }}</td>
+              <td>{{ p.pessoa }} <small class="id">(id {{ p.idPessoa }})</small></td>
+              <td>{{ p.dataAtendimento | date: 'dd/MM/yyyy' }}</td>
+              <td class="num">{{ p.valorTotal | moeda }}</td>
+              <td><span [class]="'status status-' + p.statusAtendimento">{{ rotulo(p.statusAtendimento) }}</span></td>
+              <td class="acoes-linha">
+                <button type="button" class="botao secundario pequeno" (click)="alternar(p.idAtendimento)">
+                  {{ aberto() === p.idAtendimento ? 'Ocultar' : 'Itens' }}
+                </button>
+                @for (s of proximos(p.statusAtendimento); track s) {
+                  <button type="button" [class]="'botao pequeno' + (s === 'X' ? ' perigo' : '')"
+                    [disabled]="processando() === p.idAtendimento" (click)="mudarStatus(p, s)">
+                    {{ acao[s] }}
+                  </button>
+                }
+              </td>
+            </tr>
+            @if (aberto() === p.idAtendimento) {
+              <tr class="detalhe">
+                <td colspan="6">
+                  <table class="tabela">
+                    <thead>
+                      <tr>
+                        <th>Item</th>
+                        <th>Funcionário</th>
+                        <th>Cargo</th>
+                        <th class="num">Qtd.</th>
+                        <th class="num">Valor unit.</th>
+                        <th class="num">Subtotal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (i of p.itens; track i.idItem) {
+                        <tr>
+                          <td>{{ i.item }}</td>
+                          <td>{{ i.funcionario }}</td>
+                          <td>{{ cargo(i.idFuncionario) }}</td>
+                          <td class="num">{{ i.quantidadeItens }}</td>
+                          <td class="num">{{ i.valorUnitario | moeda }}</td>
+                          <td class="num">{{ i.subtotal | moeda }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+}

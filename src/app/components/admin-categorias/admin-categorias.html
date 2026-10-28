@@ -1,0 +1,52 @@
+<h1>Categorias</h1>
+
+<section class="painel">
+  <h2>{{ editando() ? 'Editar categoria' : 'Nova categoria' }}</h2>
+  <form class="linha-form" (submit)="$event.preventDefault(); salvar()">
+    <label class="campo">
+      Nome
+      <input type="text" [formControl]="nome" maxlength="35" placeholder="Ex.: Hidratação">
+      @if (nome.invalid && nome.touched) {
+        <small class="erro">{{ erroNome() }}</small>
+      }
+    </label>
+    <button type="submit" class="botao" [disabled]="salvando()">
+      {{ editando() ? 'Salvar alterações' : 'Adicionar' }}
+    </button>
+    @if (editando()) {
+      <button type="button" class="botao secundario" (click)="cancelar()">Cancelar</button>
+    }
+  </form>
+</section>
+
+<section class="painel">
+  @if (carregando()) {
+    <p class="vazio">Carregando categorias...</p>
+  } @else if (categorias().length === 0) {
+    <p class="vazio">Nenhuma categoria cadastrada.</p>
+  } @else {
+    <div class="tabela-rolagem">
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th class="num">Código</th>
+            <th>Categoria</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of categorias(); track c.idcategoria) {
+            <tr>
+              <td class="num">{{ c.idcategoria }}</td>
+              <td>{{ c.categoria }}</td>
+              <td class="num acoes-linha">
+                <button type="button" class="botao secundario" (click)="editar(c)">Editar</button>
+                <button type="button" class="botao perigo" (click)="excluir(c)">Excluir</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

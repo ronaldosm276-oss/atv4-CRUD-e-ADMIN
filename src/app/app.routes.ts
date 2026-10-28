@@ -2,7 +2,44 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'loja' },
-  { path: 'loja', loadChildren: () => import('./loja/loja.routes').then(m => m.LOJA_ROUTES) },
-  { path: 'admin', loadChildren: () => import('./admin/admin.routes').then(m => m.ADMIN_ROUTES) },
+
+  // Loja virtual
+  {
+    path: 'loja',
+    loadComponent: () => import('./components/loja-layout/loja-layout').then(m => m.LojaLayout),
+    children: [
+      { path: '', loadComponent: () => import('./components/catalogo/catalogo').then(m => m.Catalogo) },
+      { path: 'cadastro', loadComponent: () => import('./components/cadastro/cadastro').then(m => m.Cadastro) },
+      { path: 'carrinho', loadComponent: () => import('./components/carrinho/carrinho').then(m => m.Carrinho) },
+      { path: 'pedidos', loadComponent: () => import('./components/pedidos/pedidos').then(m => m.Pedidos) },
+    ],
+  },
+
+  // Painel administrativo
+  {
+    path: 'admin',
+    loadComponent: () => import('./components/admin-layout/admin-layout').then(m => m.AdminLayout),
+    children: [
+      // "Início" (resumo) entra na parte 2; por enquanto abre em Pedidos
+      { path: '', pathMatch: 'full', redirectTo: 'pedidos' },
+      {
+        path: 'pedidos',
+        loadComponent: () => import('./components/admin-pedidos/admin-pedidos').then(m => m.AdminPedidos),
+      },
+      {
+        path: 'estoque',
+        loadComponent: () => import('./components/admin-estoque/admin-estoque').then(m => m.AdminEstoque),
+      },
+      {
+        path: 'entradas',
+        loadComponent: () => import('./components/admin-entradas/admin-entradas').then(m => m.AdminEntradas),
+      },
+      {
+        path: 'categorias',
+        loadComponent: () => import('./components/admin-categorias/admin-categorias').then(m => m.AdminCategorias),
+      },
+    ],
+  },
+
   { path: '**', redirectTo: 'loja' },
 ];

@@ -1,0 +1,12 @@
+<header class="topo">
+  <a routerLink="/admin" class="marca">minhaloja · administração</a>
+  <nav>
+    @for (i of itens; track i.rota) {
+      <a [routerLink]="'/admin/' + i.rota" routerLinkActive="ativo"
+         [routerLinkActiveOptions]="{ exact: i.rota === '' }">{{ i.rotulo }}</a>
+    }
+    <a routerLink="/loja">Ir para a loja</a>
+  </nav>
+</header>
+<main class="conteudo"><router-outlet /></main>
+<app-mensagem />

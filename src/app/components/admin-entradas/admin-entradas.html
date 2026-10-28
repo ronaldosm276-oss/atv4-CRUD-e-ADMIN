@@ -1,0 +1,87 @@
+<h1>Entrada de produtos</h1>
+
+<form class="painel" [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+  <h2>Registrar entrada</h2>
+
+  <div class="linha">
+    <label class="campo largo">
+      Produto
+      <select formControlName="idItem">
+        <option [ngValue]="null">Selecione</option>
+        @for (p of produtos(); track p.idItem) {
+          <option [ngValue]="p.idItem">{{ p.item }} (estoque: {{ p.quantidadeEstoque }})</option>
+        }
+      </select>
+      @if (invalido('idItem')) { <small class="erro">{{ erro('idItem') }}</small> }
+    </label>
+
+    <label class="campo">
+      Data da entrada
+      <input type="date" formControlName="dataEntradaProduto" [max]="hoje">
+      @if (invalido('dataEntradaProduto')) { <small class="erro">{{ erro('dataEntradaProduto') }}</small> }
+    </label>
+
+    <label class="campo">
+      Quantidade recebida
+      <input type="number" formControlName="quantidadeEntrada" min="1" step="1">
+      @if (invalido('quantidadeEntrada')) { <small class="erro">{{ erro('quantidadeEntrada') }}</small> }
+    </label>
+
+    <label class="campo">
+      Unidade
+      <input type="text" formControlName="unidade" maxlength="10">
+      @if (invalido('unidade')) { <small class="erro">{{ erro('unidade') }}</small> }
+    </label>
+
+    <label class="campo">
+      Valor unitário de entrada (R$)
+      <input type="number" formControlName="valorUnitarioEntrada" min="0.01" step="0.01">
+      @if (invalido('valorUnitarioEntrada')) { <small class="erro">{{ erro('valorUnitarioEntrada') }}</small> }
+    </label>
+  </div>
+
+  <div class="acoes">
+    <button type="submit" class="botao" [disabled]="salvando()">{{ salvando() ? 'Registrando...' : 'Registrar entrada' }}</button>
+  </div>
+</form>
+
+<section class="painel">
+  <h2>Entradas registradas</h2>
+
+  @if (carregando()) {
+    <p class="vazio">Carregando...</p>
+  } @else if (historico().length === 0) {
+    <p class="vazio">Nenhuma entrada registrada.</p>
+  } @else {
+    <div class="tabela-rolagem">
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th class="num">Nº</th>
+            <th>Data</th>
+            <th>Produto</th>
+            <th class="num">Quantidade</th>
+            <th>Unidade</th>
+            <th class="num">Valor unit.</th>
+            <th class="num">Estoque atual</th>
+            <th class="num">Preço de venda</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (e of historico(); track e.idEntradaProduto) {
+            <tr>
+              <td class="num">{{ e.idEntradaProduto }}</td>
+              <td>{{ e.dataEntradaProduto | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ e.item }}</td>
+              <td class="num">{{ e.quantidadeEntrada }}</td>
+              <td>{{ e.unidade }}</td>
+              <td class="num">{{ e.valorUnitarioEntrada | moeda }}</td>
+              <td class="num">{{ e.quantidadeEstoqueAtual }}</td>
+              <td class="num">{{ e.precoVenda | moeda }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

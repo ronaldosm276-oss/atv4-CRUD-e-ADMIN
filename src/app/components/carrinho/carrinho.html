@@ -1,0 +1,91 @@
+<h1>Carrinho</h1>
+
+@if (carrinho.linhas().length === 0) {
+  <div class="painel vazio">
+    <p>Seu carrinho está vazio.</p>
+    <a routerLink="/loja" class="botao">Ver produtos e serviços</a>
+  </div>
+} @else {
+  <section class="painel">
+    <div class="tabela-rolagem">
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th class="num">Valor unit.</th>
+            <th>Quantidade</th>
+            <th class="num">Subtotal</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (l of carrinho.linhas(); track l.idItem) {
+            <tr>
+              <td>
+                {{ l.nome }}
+                <small class="tipo">{{ l.tipo === 'P' ? 'Produto' : 'Serviço' }}</small>
+              </td>
+              <td class="num">{{ l.preco | moeda }}</td>
+              <td>
+                @if (l.tipo === 'P') {
+                  <span class="qtd">
+                    <button type="button" aria-label="Diminuir" [disabled]="l.quantidade <= 1"
+                      (click)="carrinho.alterarQuantidade(l.idItem, l.quantidade - 1)">−</button>
+                    {{ l.quantidade }}
+                    <button type="button" aria-label="Aumentar" [disabled]="l.quantidade >= (l.estoque ?? 0)"
+                      (click)="carrinho.alterarQuantidade(l.idItem, l.quantidade + 1)">+</button>
+                  </span>
+                } @else {
+                  1
+                }
+              </td>
+              <td class="num">{{ l.preco * l.quantidade | moeda }}</td>
+              <td class="num">
+                <button type="button" class="botao secundario" (click)="carrinho.remover(l.idItem)">Remover</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" class="num"><strong>Total</strong></td>
+            <td class="num"><strong>{{ carrinho.total() | moeda }}</strong></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+
+  <section class="painel">
+    <h2>Finalizar compra</h2>
+
+    @if (sessao.cliente(); as c) {
+      <p>Cliente: <strong>{{ c.nome }}</strong></p>
+
+      <label class="campo atendente">
+        Atendente
+        <select #sel (change)="idAtendente.set(+sel.value)">
+          <option value="0">Selecione</option>
+          @for (f of atendentes(); track f.idPessoa) {
+            <option [value]="f.idPessoa">{{ f.nome }} — {{ f.cargo }}</option>
+          }
+        </select>
+      </label>
+
+      <p class="nota">O pagamento é combinado depois: o pedido fica como "Aberto" até o atendimento tratá-lo.</p>
+
+      <div class="acoes">
+        <button type="button" class="botao" [disabled]="!podeFinalizar() || enviando()" (click)="finalizar()">
+          {{ enviando() ? 'Enviando...' : 'Confirmar pedido' }}
+        </button>
+        <a routerLink="/loja" class="botao secundario">Continuar comprando</a>
+        <button type="button" class="botao secundario" (click)="carrinho.limpar()">Esvaziar carrinho</button>
+      </div>
+    } @else {
+      <p>Identifique-se para confirmar o pedido.</p>
+      <app-identificacao />
+      <p class="nota">Ainda não tem cadastro? <a routerLink="/loja/cadastro">Cadastre-se</a></p>
+    }
+  </section>
+}

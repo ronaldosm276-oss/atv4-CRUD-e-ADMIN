@@ -1,0 +1,7 @@
+h1 { margin: 0 0 1rem; font-size: 1.4rem; }
+.linha { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem; }
+.largo { grid-column: span 2; }
+
+@media (max-width: 520px) {
+  .largo { grid-column: span 1; }
+}

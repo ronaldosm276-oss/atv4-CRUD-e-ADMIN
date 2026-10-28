@@ -1,0 +1,3 @@
+.identificacao { display: flex; flex-wrap: wrap; align-items: flex-start; gap: .75rem; }
+.identificacao .campo { flex: 1; min-width: 15rem; }
+.identificacao .botao { margin-top: 1.35rem; }
