@@ -1,0 +1,79 @@
+<h1>Cadastro de cliente</h1>
+
+<section class="painel">
+  <h2>Já sou cliente</h2>
+  <app-identificacao (identificado)="irParaLoja()" />
+</section>
+
+<form class="painel" [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+  <h2>Novo cadastro</h2>
+
+  <div class="linha">
+    <label class="campo largo">
+      Nome completo
+      <input type="text" formControlName="nome" maxlength="100" autocomplete="name">
+      @if (invalido('nome')) { <small class="erro">{{ erro('nome') }}</small> }
+    </label>
+
+    <label class="campo">
+      CPF
+      <input type="text" formControlName="cpf" inputmode="numeric" placeholder="000.000.000-00" maxlength="14">
+      @if (invalido('cpf')) { <small class="erro">{{ erro('cpf') }}</small> }
+    </label>
+
+    <label class="campo">
+      Data de nascimento
+      <input type="date" formControlName="dataNascimento">
+      @if (invalido('dataNascimento')) { <small class="erro">{{ erro('dataNascimento') }}</small> }
+    </label>
+
+    <label class="campo">
+      Sexo
+      <select formControlName="sexo">
+        <option value="">Selecione</option>
+        <option value="F">Feminino</option>
+        <option value="M">Masculino</option>
+      </select>
+      @if (invalido('sexo')) { <small class="erro">{{ erro('sexo') }}</small> }
+    </label>
+
+    <label class="campo largo">
+      E-mail
+      <input type="email" formControlName="email" maxlength="100" autocomplete="email">
+      @if (invalido('email')) { <small class="erro">{{ erro('email') }}</small> }
+    </label>
+
+    <label class="campo">
+      Telefone
+      <input type="tel" formControlName="telefone" inputmode="numeric" placeholder="(79) 99999-0000" maxlength="15">
+      @if (invalido('telefone')) { <small class="erro">{{ erro('telefone') }}</small> }
+    </label>
+  </div>
+
+  <h2 class="subtitulo">Endereço</h2>
+  <div class="linha" formGroupName="endereco">
+    <label class="campo">
+      CEP
+      <input type="text" formControlName="cep" inputmode="numeric" placeholder="00000-000" maxlength="9">
+      @if (invalido('endereco.cep')) { <small class="erro">{{ erro('endereco.cep') }}</small> }
+    </label>
+
+    <label class="campo">
+      Número
+      <input type="text" formControlName="numero" maxlength="10">
+      @if (invalido('endereco.numero')) { <small class="erro">{{ erro('endereco.numero') }}</small> }
+    </label>
+
+    <label class="campo largo">
+      Complemento
+      <input type="text" formControlName="complemento" maxlength="150" placeholder="Casa, apto, bloco...">
+      @if (invalido('endereco.complemento')) { <small class="erro">{{ erro('endereco.complemento') }}</small> }
+    </label>
+  </div>
+
+  <div class="acoes">
+    <button type="submit" class="botao" [disabled]="salvando()">{{ salvando() ? 'Salvando...' : 'Salvar' }}</button>
+    <button type="button" class="botao secundario" (click)="limpar()">Limpar</button>
+    <a routerLink="/loja" class="botao secundario">Voltar ao catálogo</a>
+  </div>
+</form>

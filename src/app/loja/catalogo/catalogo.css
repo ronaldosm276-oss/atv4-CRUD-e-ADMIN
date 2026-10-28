@@ -1,0 +1,19 @@
+h1 { margin: 0 0 1rem; font-size: 1.4rem; }
+
+.categorias, .tipos { display: flex; flex-wrap: wrap; gap: .5rem; }
+.categorias { margin-bottom: 1rem; }
+
+.categorias a, .tipos a {
+  padding: .3rem .8rem; border-radius: 999px; background: var(--papel);
+  color: var(--verde); text-decoration: none; font-size: .9rem;
+}
+.categorias a.ativo, .tipos a.ativo { background: var(--verde); color: #fff; }
+
+.filtros { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: 1.25rem; }
+.filtros input { flex: 1; min-width: 14rem; max-width: 26rem; padding: .55rem .75rem; border: 1px solid #9aa6a2; border-radius: 4px; }
+
+.grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 1rem; }
+
+.estado { padding: 2rem 1rem; text-align: center; background: var(--papel); border-radius: 8px; }
+.estado.erro { color: var(--erro); }
+.estado button { padding: .5rem 1rem; border: 0; border-radius: 4px; background: var(--verde); color: #fff; cursor: pointer; }

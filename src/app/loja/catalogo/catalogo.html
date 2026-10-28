@@ -1,0 +1,37 @@
+@if (carregando()) {
+  <p class="estado">Carregando catálogo...</p>
+} @else if (erro()) {
+  <div class="estado erro">
+    <p>{{ erro() }}</p>
+    <button type="button" (click)="carregar()">Tentar novamente</button>
+  </div>
+} @else {
+  <h1>Produtos e serviços</h1>
+
+  <nav class="categorias" aria-label="Categorias">
+    <a routerLink="/loja" [queryParams]="{ tipo: tipo() || null }" [class.ativo]="!idCategoria()">Todos</a>
+    @for (c of categorias(); track c.idcategoria) {
+      <a routerLink="/loja" [queryParams]="{ categoria: c.idcategoria, tipo: tipo() || null }"
+         [class.ativo]="idCategoria() === c.idcategoria">{{ c.categoria }}</a>
+    }
+  </nav>
+
+  <div class="filtros">
+    <input #campo type="search" placeholder="Pesquisar por nome" [value]="busca()" (input)="busca.set(campo.value)">
+    <div class="tipos">
+      <a routerLink="/loja" [queryParams]="{ categoria: idCategoria() || null, tipo: null }" [class.ativo]="!tipo()">Tudo</a>
+      <a routerLink="/loja" [queryParams]="{ categoria: idCategoria() || null, tipo: 'P' }" [class.ativo]="tipo() === 'P'">Produtos</a>
+      <a routerLink="/loja" [queryParams]="{ categoria: idCategoria() || null, tipo: 'S' }" [class.ativo]="tipo() === 'S'">Serviços</a>
+    </div>
+  </div>
+
+  @if (filtrados().length === 0) {
+    <p class="estado">Nenhum item encontrado.</p>
+  } @else {
+    <section class="grade">
+      @for (i of filtrados(); track i.idItem) {
+        <app-cartao-item [item]="i" (adicionar)="adicionar($event)" />
+      }
+    </section>
+  }
+}
