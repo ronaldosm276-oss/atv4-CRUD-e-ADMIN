@@ -1,0 +1,112 @@
+<h1>Serviços</h1>
+
+<section class="painel">
+  <form class="busca" (submit)="$event.preventDefault(); consultar()">
+    <label class="campo">
+      Consultar pelo ID do serviço
+      <input type="text" inputmode="numeric" [formControl]="busca" placeholder="Ex.: 1">
+    </label>
+    <button type="submit" class="botao">Consultar</button>
+    @if (modoBusca()) {
+      <button type="button" class="botao secundario" (click)="recarregar()">Ver todos</button>
+    }
+  </form>
+</section>
+
+<form class="painel" [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+  <h2>
+    @if (editando(); as e) { Editar serviço nº {{ e.idItem }} } @else { Novo serviço }
+  </h2>
+
+  <div class="linha">
+    <label class="campo largo">
+      Nome
+      <input type="text" formControlName="item" maxlength="40">
+      @if (invalido('item')) { <small class="erro">{{ erro('item') }}</small> }
+    </label>
+
+    <label class="campo largo">
+      Descrição
+      <input type="text" formControlName="descricaoItem" maxlength="200">
+      @if (invalido('descricaoItem')) { <small class="erro">{{ erro('descricaoItem') }}</small> }
+    </label>
+
+    <label class="campo">
+      Categoria
+      <select formControlName="idCategoria">
+        <option [ngValue]="null">Selecione</option>
+        @for (c of categorias(); track c.idcategoria) {
+          <option [ngValue]="c.idcategoria">{{ c.categoria }}</option>
+        }
+      </select>
+      @if (invalido('idCategoria')) { <small class="erro">{{ erro('idCategoria') }}</small> }
+    </label>
+
+    <label class="campo">
+      Preço (R$)
+      <input type="number" formControlName="preco" min="0.01" step="0.01">
+      @if (invalido('preco')) { <small class="erro">{{ erro('preco') }}</small> }
+    </label>
+  </div>
+
+  <div class="acoes">
+    <button type="submit" class="botao" [disabled]="salvando()">
+      {{ salvando() ? 'Salvando...' : (editando() ? 'Salvar alterações' : 'Cadastrar') }}
+    </button>
+    @if (editando()) {
+      <button type="button" class="botao secundario" (click)="cancelar()">Cancelar</button>
+    }
+  </div>
+</form>
+
+@if (carregando()) {
+  <p class="painel vazio">Carregando serviços...</p>
+} @else if (erroLista()) {
+  <div class="painel vazio erro-painel">
+    <p>{{ erroLista() }}</p>
+    <button type="button" class="botao" (click)="carregar()">Tentar novamente</button>
+  </div>
+} @else if (servicos().length === 0) {
+  <p class="painel vazio">Nenhum serviço cadastrado.</p>
+} @else {
+  <section class="painel">
+    <div class="tabela-rolagem">
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th class="num">ID</th>
+            <th>Serviço</th>
+            <th>Descrição</th>
+            <th>Categoria</th>
+            <th class="num">Preço</th>
+            <th>Situação</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of servicos(); track s.idItem) {
+            <tr>
+              <td class="num">{{ s.idItem }}</td>
+              <td>{{ s.item }}</td>
+              <td class="descricao">{{ s.descricaoItem }}</td>
+              <td>{{ categoria(s) }}</td>
+              <td class="num">{{ s.preco | moeda }}</td>
+              <td>
+                <span [class]="'status ' + (ativo(s) ? 'status-C' : 'status-X')">
+                  {{ ativo(s) ? 'Ativo' : 'Inativo' }}
+                </span>
+              </td>
+              <td class="acoes-linha">
+                <button type="button" class="botao secundario pequeno" (click)="editar(s)">Editar</button>
+                <button type="button" [class]="'botao pequeno' + (ativo(s) ? ' perigo' : '')"
+                  [disabled]="processando() === s.idItem" (click)="alternarAtivo(s)">
+                  {{ ativo(s) ? 'Desativar' : 'Ativar' }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+}

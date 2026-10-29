@@ -1,0 +1,134 @@
+<h1>Produtos</h1>
+
+<section class="painel">
+  <form class="busca" (submit)="$event.preventDefault(); consultar()">
+    <label class="campo">
+      Consultar pelo ID do produto
+      <input type="text" inputmode="numeric" [formControl]="busca" placeholder="Ex.: 21">
+    </label>
+    <button type="submit" class="botao">Consultar</button>
+    @if (modoBusca()) {
+      <button type="button" class="botao secundario" (click)="recarregar()">Ver todos</button>
+    }
+  </form>
+</section>
+
+<form class="painel" [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+  <h2>
+    @if (editando(); as e) { Editar produto nº {{ e.iditem }} } @else { Novo produto }
+  </h2>
+
+  <div class="linha">
+    <label class="campo largo">
+      Nome
+      <input type="text" formControlName="item" maxlength="40">
+      @if (invalido('item')) { <small class="erro">{{ erro('item') }}</small> }
+    </label>
+
+    <label class="campo largo">
+      Descrição
+      <input type="text" formControlName="descricaoItem" maxlength="200">
+      @if (invalido('descricaoItem')) { <small class="erro">{{ erro('descricaoItem') }}</small> }
+    </label>
+
+    <label class="campo">
+      Categoria
+      <select formControlName="idCategoria">
+        <option [ngValue]="null">Selecione</option>
+        @for (c of categorias(); track c.idcategoria) {
+          <option [ngValue]="c.idcategoria">{{ c.categoria }}</option>
+        }
+      </select>
+      @if (invalido('idCategoria')) { <small class="erro">{{ erro('idCategoria') }}</small> }
+    </label>
+
+    <label class="campo">
+      Unidade
+      <input type="text" formControlName="unidade" maxlength="10">
+      @if (invalido('unidade')) { <small class="erro">{{ erro('unidade') }}</small> }
+    </label>
+
+    <label class="campo">
+      Preço (R$)
+      <input type="number" formControlName="preco" min="0.01" step="0.01">
+      @if (invalido('preco')) { <small class="erro">{{ erro('preco') }}</small> }
+    </label>
+
+    <label class="campo">
+      Preço de venda (R$)
+      <input type="number" formControlName="precoVenda" min="0.01" step="0.01">
+      <small class="dica">O banco recalcula o preço de venda a cada entrada de estoque.</small>
+      @if (invalido('precoVenda')) { <small class="erro">{{ erro('precoVenda') }}</small> }
+    </label>
+
+    <label class="campo">
+      Código de preço
+      <input type="number" formControlName="codigoPreco" min="1" step="1">
+      <small class="dica">Usado pelo banco no cálculo do preço de venda.</small>
+      @if (invalido('codigoPreco')) { <small class="erro">{{ erro('codigoPreco') }}</small> }
+    </label>
+  </div>
+
+  <div class="acoes">
+    <button type="submit" class="botao" [disabled]="salvando()">
+      {{ salvando() ? 'Salvando...' : (editando() ? 'Salvar alterações' : 'Cadastrar') }}
+    </button>
+    @if (editando()) {
+      <button type="button" class="botao secundario" (click)="cancelar()">Cancelar</button>
+    }
+  </div>
+</form>
+
+@if (carregando()) {
+  <p class="painel vazio">Carregando produtos...</p>
+} @else if (erroLista()) {
+  <div class="painel vazio erro-painel">
+    <p>{{ erroLista() }}</p>
+    <button type="button" class="botao" (click)="carregar()">Tentar novamente</button>
+  </div>
+} @else if (produtos().length === 0) {
+  <p class="painel vazio">Nenhum produto cadastrado.</p>
+} @else {
+  <section class="painel">
+    <div class="tabela-rolagem">
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th class="num">ID</th>
+            <th>Produto</th>
+            <th>Categoria</th>
+            <th class="num">Preço</th>
+            <th class="num">Preço de venda</th>
+            <th>Unidade</th>
+            <th>Situação</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of produtos(); track p.iditem) {
+            <tr>
+              <td class="num">{{ p.iditem }}</td>
+              <td>{{ p.iditemNavigation.item1 }}</td>
+              <td>{{ categoria(p.iditemNavigation.idcategoria) }}</td>
+              <td class="num">{{ p.iditemNavigation.preco | moeda }}</td>
+              <td class="num">{{ p.precoVenda | moeda }}</td>
+              <td>{{ p.unidade }}</td>
+              <td>
+                <span [class]="'status ' + (ativo(p) ? 'status-C' : 'status-X')">
+                  {{ ativo(p) ? 'Ativo' : 'Inativo' }}
+                </span>
+              </td>
+              <td class="acoes-linha">
+                <button type="button" class="botao secundario pequeno" (click)="editar(p)">Editar</button>
+                <button type="button" [class]="'botao pequeno' + (ativo(p) ? ' perigo' : '')"
+                  [disabled]="processando() === p.iditem" (click)="alternarAtivo(p)">
+                  {{ ativo(p) ? 'Desativar' : 'Ativar' }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+}

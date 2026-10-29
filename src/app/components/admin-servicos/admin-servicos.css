@@ -1,0 +1,12 @@
+h1 { margin: 0 0 1rem; font-size: 1.4rem; }
+.busca { display: flex; flex-wrap: wrap; align-items: flex-start; gap: .75rem; }
+.busca .campo { min-width: 14rem; }
+.busca .botao { margin-top: 1.35rem; }
+.linha { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem; }
+.largo { grid-column: span 2; }
+.descricao { max-width: 22rem; font-size: .85rem; color: #44524e; }
+.erro-painel { color: var(--erro); }
+
+@media (max-width: 520px) {
+  .largo { grid-column: span 1; }
+}

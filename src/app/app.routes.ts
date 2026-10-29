@@ -20,7 +20,7 @@ export const routes: Routes = [
     path: 'admin',
     loadComponent: () => import('./components/admin-layout/admin-layout').then(m => m.AdminLayout),
     children: [
-      // "Início" (resumo) entra na parte 2; por enquanto abre em Pedidos
+      // "Início" (resumo), Clientes e Funcionários entram na parte 3; por enquanto abre em Pedidos
       { path: '', pathMatch: 'full', redirectTo: 'pedidos' },
       {
         path: 'pedidos',
@@ -37,6 +37,14 @@ export const routes: Routes = [
       {
         path: 'categorias',
         loadComponent: () => import('./components/admin-categorias/admin-categorias').then(m => m.AdminCategorias),
+      },
+      {
+        path: 'produtos',
+        loadComponent: () => import('./components/admin-produtos/admin-produtos').then(m => m.AdminProdutos),
+      },
+      {
+        path: 'servicos',
+        loadComponent: () => import('./components/admin-servicos/admin-servicos').then(m => m.AdminServicos),
       },
     ],
   },

@@ -40,3 +40,11 @@ export function dataNascimentoValida(c: AbstractControl): ValidationErrors | nul
   if (data < '1900-01-01') return { data: true };
   return null;
 }
+
+// no maximo 2 casas decimais (colunas DECIMAL(10,2); a API recusa mais que isso)
+export function duasCasas(c: AbstractControl): ValidationErrors | null {
+  const valor = c.value;
+  if (valor === null || valor === undefined || valor === '') return null;
+  const n = Number(valor);
+  return Number.isFinite(n) && Math.abs(n * 100 - Math.round(n * 100)) < 1e-6 ? null : { casas: true };
+}
