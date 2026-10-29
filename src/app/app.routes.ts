@@ -20,19 +20,14 @@ export const routes: Routes = [
     path: 'admin',
     loadComponent: () => import('./components/admin-layout/admin-layout').then(m => m.AdminLayout),
     children: [
-      // "Início" (resumo), Clientes e Funcionários entram na parte 3; por enquanto abre em Pedidos
-      { path: '', pathMatch: 'full', redirectTo: 'pedidos' },
       {
-        path: 'pedidos',
-        loadComponent: () => import('./components/admin-pedidos/admin-pedidos').then(m => m.AdminPedidos),
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () => import('./components/admin-inicio/admin-inicio').then(m => m.AdminInicio),
       },
       {
-        path: 'estoque',
-        loadComponent: () => import('./components/admin-estoque/admin-estoque').then(m => m.AdminEstoque),
-      },
-      {
-        path: 'entradas',
-        loadComponent: () => import('./components/admin-entradas/admin-entradas').then(m => m.AdminEntradas),
+        path: 'clientes',
+        loadComponent: () => import('./components/admin-clientes/admin-clientes').then(m => m.AdminClientes),
       },
       {
         path: 'categorias',
@@ -45,6 +40,22 @@ export const routes: Routes = [
       {
         path: 'servicos',
         loadComponent: () => import('./components/admin-servicos/admin-servicos').then(m => m.AdminServicos),
+      },
+      {
+        path: 'funcionarios',
+        loadComponent: () => import('./components/admin-funcionarios/admin-funcionarios').then(m => m.AdminFuncionarios),
+      },
+      {
+        path: 'pedidos',
+        loadComponent: () => import('./components/admin-pedidos/admin-pedidos').then(m => m.AdminPedidos),
+      },
+      {
+        path: 'entradas',
+        loadComponent: () => import('./components/admin-entradas/admin-entradas').then(m => m.AdminEntradas),
+      },
+      {
+        path: 'estoque',
+        loadComponent: () => import('./components/admin-estoque/admin-estoque').then(m => m.AdminEstoque),
       },
     ],
   },

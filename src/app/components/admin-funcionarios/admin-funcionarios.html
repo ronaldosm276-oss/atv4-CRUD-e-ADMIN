@@ -1,0 +1,170 @@
+<h1>Funcionários</h1>
+
+<section class="painel">
+  <form class="busca" (submit)="$event.preventDefault(); consultar()">
+    <label class="campo">
+      Consultar pelo ID do funcionário
+      <input type="text" inputmode="numeric" [formControl]="busca" placeholder="Ex.: 1">
+    </label>
+    <button type="submit" class="botao">Consultar</button>
+    @if (modoBusca()) {
+      <button type="button" class="botao secundario" (click)="recarregar()">Ver todos</button>
+    }
+  </form>
+</section>
+
+<form class="painel" [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+  <h2>
+    @if (editando(); as e) { Editar funcionário nº {{ e.idPessoa }} } @else { Novo funcionário }
+  </h2>
+
+  <div class="linha">
+    <label class="campo largo">
+      Nome completo
+      <input type="text" formControlName="nome" maxlength="100">
+      @if (invalido(form.controls.nome)) { <small class="erro">{{ erro(form.controls.nome) }}</small> }
+    </label>
+
+    <label class="campo">
+      CPF
+      <input type="text" formControlName="cpf" inputmode="numeric" placeholder="000.000.000-00" maxlength="14">
+      @if (invalido(form.controls.cpf)) { <small class="erro">{{ erro(form.controls.cpf) }}</small> }
+    </label>
+
+    <label class="campo">
+      Data de nascimento
+      <input type="date" formControlName="dataNascimento">
+      @if (invalido(form.controls.dataNascimento)) { <small class="erro">{{ erro(form.controls.dataNascimento) }}</small> }
+    </label>
+
+    <label class="campo">
+      Sexo
+      <select formControlName="sexo">
+        <option value="">Selecione</option>
+        <option value="F">Feminino</option>
+        <option value="M">Masculino</option>
+      </select>
+      @if (invalido(form.controls.sexo)) { <small class="erro">{{ erro(form.controls.sexo) }}</small> }
+    </label>
+
+    <label class="campo largo">
+      E-mail
+      <input type="email" formControlName="email" maxlength="100">
+      @if (invalido(form.controls.email)) { <small class="erro">{{ erro(form.controls.email) }}</small> }
+    </label>
+
+    <label class="campo">
+      Telefone
+      <input type="tel" formControlName="telefone" inputmode="numeric" placeholder="(79) 99999-0000" maxlength="15">
+      @if (invalido(form.controls.telefone)) { <small class="erro">{{ erro(form.controls.telefone) }}</small> }
+    </label>
+
+    <label class="campo">
+      Cargo
+      <input type="text" formControlName="cargo" maxlength="20">
+      @if (invalido(form.controls.cargo)) { <small class="erro">{{ erro(form.controls.cargo) }}</small> }
+    </label>
+
+    <label class="campo">
+      Data de admissão
+      <input type="date" formControlName="dataAdmissao">
+      @if (invalido(form.controls.dataAdmissao)) { <small class="erro">{{ erro(form.controls.dataAdmissao) }}</small> }
+    </label>
+  </div>
+
+  <h2 class="subtitulo">Endereços</h2>
+  <div formArrayName="enderecos">
+    @for (g of enderecos.controls; track g; let i = $index) {
+      <div class="linha endereco" [formGroupName]="i">
+        <label class="campo">
+          CEP
+          <input type="text" formControlName="cep" inputmode="numeric" placeholder="00000-000" maxlength="9">
+          @if (invalido(g.controls.cep)) { <small class="erro">{{ erro(g.controls.cep) }}</small> }
+        </label>
+
+        <label class="campo">
+          Número
+          <input type="text" formControlName="numero" maxlength="10">
+          @if (invalido(g.controls.numero)) { <small class="erro">{{ erro(g.controls.numero) }}</small> }
+        </label>
+
+        <label class="campo largo">
+          Complemento
+          <input type="text" formControlName="complemento" maxlength="150">
+          @if (invalido(g.controls.complemento)) { <small class="erro">{{ erro(g.controls.complemento) }}</small> }
+        </label>
+
+        @if (g.controls.idEndereco.value === 0 && enderecos.length > 1) {
+          <button type="button" class="botao secundario pequeno remover" (click)="removerEndereco(i)">Remover</button>
+        }
+      </div>
+    }
+  </div>
+  <button type="button" class="botao secundario pequeno" (click)="adicionarEndereco()">Adicionar endereço</button>
+
+  <div class="acoes">
+    <button type="submit" class="botao" [disabled]="salvando()">
+      {{ salvando() ? 'Salvando...' : (editando() ? 'Salvar alterações' : 'Cadastrar') }}
+    </button>
+    @if (editando()) {
+      <button type="button" class="botao secundario" (click)="cancelar()">Cancelar</button>
+    }
+  </div>
+</form>
+
+@if (carregando()) {
+  <p class="painel vazio">Carregando funcionários...</p>
+} @else if (erroLista()) {
+  <div class="painel vazio erro-painel">
+    <p>{{ erroLista() }}</p>
+    <button type="button" class="botao" (click)="carregar()">Tentar novamente</button>
+  </div>
+} @else if (funcionarios().length === 0) {
+  <p class="painel vazio">Nenhum funcionário cadastrado.</p>
+} @else {
+  <section class="painel">
+    <p class="total">{{ textoTotal() }}</p>
+    <div class="tabela-rolagem">
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th class="num">ID</th>
+            <th>Nome</th>
+            <th>Cargo</th>
+            <th>Admissão</th>
+            <th>CPF</th>
+            <th>E-mail</th>
+            <th>Telefone</th>
+            <th>Situação</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (f of funcionarios(); track f.idPessoa) {
+            <tr>
+              <td class="num">{{ f.idPessoa }}</td>
+              <td>{{ f.nome }}</td>
+              <td>{{ f.cargo }}</td>
+              <td>{{ f.dataAdmissao | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ cpf(f.cpf) }}</td>
+              <td>{{ f.email }}</td>
+              <td>{{ telefone(f.telefone) }}</td>
+              <td>
+                <span [class]="'status ' + (ativo(f) ? 'status-C' : 'status-X')">
+                  {{ ativo(f) ? 'Ativo' : 'Inativo' }}
+                </span>
+              </td>
+              <td class="acoes-linha">
+                <button type="button" class="botao secundario pequeno" (click)="editar(f)">Editar</button>
+                <button type="button" [class]="'botao pequeno' + (ativo(f) ? ' perigo' : '')"
+                  [disabled]="processando() === f.idPessoa" (click)="alternarAtivo(f)">
+                  {{ ativo(f) ? 'Desativar' : 'Ativar' }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+}

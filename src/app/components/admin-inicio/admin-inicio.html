@@ -1,0 +1,69 @@
+<div class="barra cabecalho">
+  <h1>Resumo</h1>
+  <button type="button" class="botao secundario pequeno" [disabled]="carregando()" (click)="carregar()">
+    {{ carregando() ? 'Atualizando...' : 'Atualizar' }}
+  </button>
+</div>
+
+@if (erro()) {
+  <div class="painel vazio erro-painel">
+    <p>{{ erro() }}</p>
+    <button type="button" class="botao" (click)="carregar()">Tentar novamente</button>
+  </div>
+}
+
+@if (carregando() && !resumo()) {
+  <p class="painel vazio">Carregando resumo...</p>
+}
+
+@if (resumo(); as r) {
+  <section class="cartoes">
+    <a class="resumo" routerLink="/admin/clientes">
+      <span class="rotulo">Clientes</span>
+      <strong class="numero">{{ r.clientes }}</strong>
+      <small>{{ r.clientesAtivos }} ativos</small>
+    </a>
+
+    <a class="resumo" routerLink="/admin/funcionarios">
+      <span class="rotulo">Funcionários</span>
+      <strong class="numero">{{ r.funcionarios }}</strong>
+      <small>cadastrados</small>
+    </a>
+
+    <a class="resumo" routerLink="/admin/produtos">
+      <span class="rotulo">Produtos</span>
+      <strong class="numero">{{ r.produtos }}</strong>
+      <small>{{ r.produtosAtivos }} ativos</small>
+    </a>
+
+    <a class="resumo" routerLink="/admin/servicos">
+      <span class="rotulo">Serviços</span>
+      <strong class="numero">{{ r.servicos }}</strong>
+      <small>{{ r.servicosAtivos }} ativos</small>
+    </a>
+
+    <a class="resumo" routerLink="/admin/estoque">
+      <span class="rotulo">Estoque</span>
+      <strong class="numero">{{ r.unidadesEstoque }}</strong>
+      <small>unidades em estoque</small>
+      <small [class.alerta]="r.estoqueBaixo > 0">{{ r.estoqueBaixo }} com estoque baixo (até {{ limiteBaixo }})</small>
+      <small [class.alerta]="r.semEstoque > 0">{{ r.semEstoque }} sem estoque</small>
+    </a>
+
+    <a class="resumo" routerLink="/admin/pedidos">
+      <span class="rotulo">Pedidos</span>
+      <strong class="numero">{{ r.pedidos }}</strong>
+      <ul class="situacoes">
+        @for (s of status; track s) {
+          <li><span [class]="'status status-' + s">{{ rotulo(s) }}</span> {{ r.porStatus[s] }}</li>
+        }
+      </ul>
+    </a>
+
+    <div class="resumo">
+      <span class="rotulo">Vendas concluídas</span>
+      <strong class="numero">{{ r.faturamento | moeda }}</strong>
+      <small>soma dos pedidos concluídos</small>
+    </div>
+  </section>
+}
