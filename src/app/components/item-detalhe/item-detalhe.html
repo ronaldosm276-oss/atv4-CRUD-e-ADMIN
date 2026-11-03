@@ -1,0 +1,32 @@
+<a routerLink="/loja" class="voltar">← Voltar ao catálogo</a>
+
+@if (carregando()) {
+  <p class="painel vazio">Carregando item...</p>
+}
+
+@if (erro(); as mensagem) {
+  <div class="painel vazio erro-painel">
+    <p>{{ mensagem }}</p>
+    <a routerLink="/loja" class="botao">Ver o catálogo</a>
+  </div>
+}
+
+@if (item(); as i) {
+  <article class="painel">
+    <span class="etiqueta">{{ i.tipo === 'P' ? 'Produto' : 'Serviço' }} · {{ i.categoria }}</span>
+    <h1>{{ i.nome }}</h1>
+    <span class="codigo">ID {{ i.idItem }}</span>
+    <p class="descricao">{{ i.descricao }}</p>
+    <p class="preco">
+      {{ i.preco | moeda }}
+      @if (i.unidade) { <small>/ {{ i.unidade }}</small> }
+    </p>
+    <p class="disponibilidade" [class.sem]="!situacao(i).disponivel">{{ situacao(i).texto }}</p>
+    <div class="acoes">
+      <button type="button" class="botao" [disabled]="!situacao(i).disponivel" (click)="adicionar(i)">
+        Adicionar ao carrinho
+      </button>
+      <a routerLink="/loja/carrinho" class="botao secundario">Ver carrinho</a>
+    </div>
+  </article>
+}

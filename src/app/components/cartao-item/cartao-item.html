@@ -1,11 +1,12 @@
 <article class="cartao">
   <span class="etiqueta">{{ item().tipo === 'P' ? 'Produto' : 'Serviço' }} · {{ item().categoria }}</span>
-  <h3>{{ item().nome }}</h3>
+  <h3><a [routerLink]="['/loja/item', item().idItem]">{{ item().nome }}</a></h3>
+  <span class="codigo">ID {{ item().idItem }}</span>
   <p class="descricao">{{ item().descricao }}</p>
   <p class="preco">
     {{ item().preco | moeda }}
     @if (item().unidade) { <small>/ {{ item().unidade }}</small> }
   </p>
-  <p class="disponibilidade" [class.sem]="!disponivel()">{{ disponibilidade() }}</p>
-  <button type="button" [disabled]="!disponivel()" (click)="adicionar.emit(item())">Adicionar</button>
+  <p class="disponibilidade" [class.sem]="!situacao().disponivel">{{ situacao().texto }}</p>
+  <button type="button" [disabled]="!situacao().disponivel" (click)="adicionar.emit(item())">Adicionar</button>
 </article>

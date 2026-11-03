@@ -1,10 +1,11 @@
 import { Component, computed, input, output } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Moeda } from '../../pipes/moeda.pipe';
-import { ItemCatalogo } from '../../services/catalogo.service';
+import { disponibilidadeItem, ItemCatalogo } from '../../services/catalogo.service';
 
 @Component({
   selector: 'app-cartao-item',
-  imports: [Moeda],
+  imports: [RouterLink, Moeda],
   templateUrl: './cartao-item.html',
   styleUrl: './cartao-item.css',
 })
@@ -12,14 +13,5 @@ export class CartaoItem {
   readonly item = input.required<ItemCatalogo>();
   readonly adicionar = output<ItemCatalogo>();
 
-  protected readonly disponivel = computed(() => {
-    const estoque = this.item().estoque;
-    return estoque === null || estoque > 0;
-  });
-
-  protected readonly disponibilidade = computed(() => {
-    const estoque = this.item().estoque;
-    if (estoque === null) return 'Disponível';
-    return estoque > 0 ? `Em estoque: ${estoque}` : 'Indisponível';
-  });
+  protected readonly situacao = computed(() => disponibilidadeItem(this.item()));
 }

@@ -17,7 +17,7 @@
   </nav>
 
   <div class="filtros">
-    <input #campo type="search" placeholder="Pesquisar por nome" [value]="busca()" (input)="busca.set(campo.value)">
+    <input #campo type="search" placeholder="Pesquisar por nome ou ID" [value]="busca()" (input)="busca.set(campo.value)">
     <div class="tipos">
       <a routerLink="/loja" [queryParams]="{ categoria: idCategoria() || null, tipo: null }" [class.ativo]="!tipo()">Tudo</a>
       <a routerLink="/loja" [queryParams]="{ categoria: idCategoria() || null, tipo: 'P' }" [class.ativo]="tipo() === 'P'">Produtos</a>

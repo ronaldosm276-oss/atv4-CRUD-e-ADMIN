@@ -174,6 +174,30 @@ export class AdminServicos {
     });
   }
 
+  // o banco recusa apagar serviço que já foi usado em pedido; nesse caso a saída é desativar
+  protected excluir(s: Item) {
+    if (!confirm(`Excluir definitivamente o serviço "${s.item}"? Esta ação não pode ser desfeita.`)) return;
+
+    this.processando.set(s.idItem);
+    this.itensApi.excluir(s.idItem).subscribe({
+      next: () => {
+        this.processando.set(null);
+        this.mensagens.sucesso('Serviço excluído.');
+        if (this.editando()?.idItem === s.idItem) this.cancelar();
+        this.recarregar();
+      },
+      error: (e: HttpErrorResponse) => {
+        this.processando.set(null);
+        // 404, 409 e falha de conexão trazem mensagem própria; o resto costuma ser vínculo com pedidos
+        this.mensagens.erro(
+          e.status === 404 || e.status === 409 || e.status === 0
+            ? mensagemErro(e)
+            : `Não foi possível excluir "${s.item}". Provavelmente ele já foi usado em pedidos; use "Desativar" para tirá-lo da loja.`,
+        );
+      },
+    });
+  }
+
   // serviço já vendido não deve ser apagado: desativar o tira da loja e mantém o histórico
   protected alternarAtivo(s: Item) {
     const ativar = !this.ativo(s);

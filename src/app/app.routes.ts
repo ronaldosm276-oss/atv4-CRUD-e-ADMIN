@@ -12,6 +12,7 @@ export const routes: Routes = [
       { path: 'cadastro', loadComponent: () => import('./components/cadastro/cadastro').then(m => m.Cadastro) },
       { path: 'carrinho', loadComponent: () => import('./components/carrinho/carrinho').then(m => m.Carrinho) },
       { path: 'pedidos', loadComponent: () => import('./components/pedidos/pedidos').then(m => m.Pedidos) },
+      { path: 'item/:id', loadComponent: () => import('./components/item-detalhe/item-detalhe').then(m => m.ItemDetalhe) },
     ],
   },
 

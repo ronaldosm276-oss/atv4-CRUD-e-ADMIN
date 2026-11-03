@@ -21,6 +21,8 @@ export class AdminCategorias {
   protected readonly carregando = signal(true);
   protected readonly salvando = signal(false);
   protected readonly editando = signal<Categoria | null>(null);
+  protected readonly modoBusca = signal(false);
+  protected readonly busca = new FormControl('', { nonNullable: true });
 
   // categoria.categoria é VARCHAR(35) no banco
   protected readonly nome = new FormControl('', {
@@ -42,6 +44,7 @@ export class AdminCategorias {
   }
 
   protected carregar() {
+    this.modoBusca.set(false);
     this.carregando.set(true);
     this.servico.listar().subscribe({
       next: lista => {
@@ -53,6 +56,27 @@ export class AdminCategorias {
         this.mensagens.erro(mensagemErro(e));
       },
     });
+  }
+
+  protected consultar() {
+    const id = Number(this.busca.value.trim());
+    if (!Number.isInteger(id) || id <= 0) {
+      this.mensagens.erro('Informe o código da categoria.');
+      return;
+    }
+
+    this.servico.obter(id).subscribe({
+      next: categoria => {
+        this.categorias.set([categoria]);
+        this.modoBusca.set(true);
+      },
+      error: (e: HttpErrorResponse) => this.mensagens.erro(mensagemErro(e)),
+    });
+  }
+
+  protected verTodas() {
+    this.busca.reset('');
+    this.carregar();
   }
 
   protected salvar() {

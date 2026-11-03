@@ -43,7 +43,7 @@ export class Catalogo {
       i =>
         (!categoria || i.idCategoria === categoria) &&
         (!tipo || i.tipo === tipo) &&
-        (!termo || i.nome.toLowerCase().includes(termo)),
+        (!termo || i.nome.toLowerCase().includes(termo) || String(i.idItem) === termo),
     );
   });
 

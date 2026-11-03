@@ -1,6 +1,19 @@
 <h1>Categorias</h1>
 
 <section class="painel">
+  <form class="busca" (submit)="$event.preventDefault(); consultar()">
+    <label class="campo">
+      Consultar pelo código da categoria
+      <input type="text" inputmode="numeric" [formControl]="busca" placeholder="Ex.: 1">
+    </label>
+    <button type="submit" class="botao">Consultar</button>
+    @if (modoBusca()) {
+      <button type="button" class="botao secundario" (click)="verTodas()">Ver todas</button>
+    }
+  </form>
+</section>
+
+<section class="painel">
   <h2>{{ editando() ? 'Editar categoria' : 'Nova categoria' }}</h2>
   <form class="linha-form" (submit)="$event.preventDefault(); salvar()">
     <label class="campo">

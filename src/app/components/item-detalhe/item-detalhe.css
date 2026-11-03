@@ -1,0 +1,12 @@
+.voltar { display: inline-block; margin-bottom: 1rem; color: var(--destaque); font-weight: 600; text-decoration: none; }
+.voltar:hover { text-decoration: underline; }
+.etiqueta { display: inline-block; padding: .1rem .6rem; border-radius: 999px; background: var(--destaque-suave);
+  color: var(--destaque-escuro); font-size: .75rem; font-weight: 600; }
+h1 { margin: .5rem 0 .25rem; font-size: 1.6rem; }
+.codigo { font-size: .8rem; color: var(--texto-suave); }
+.descricao { margin: 1rem 0; color: var(--texto-suave); }
+.preco { margin: 0; font-size: 1.6rem; font-weight: 800; }
+.preco small { font-size: 1rem; font-weight: 400; color: var(--texto-suave); }
+.disponibilidade { margin: .5rem 0 0; color: var(--sucesso); }
+.disponibilidade.sem { color: var(--erro); }
+.erro-painel { color: var(--erro); }

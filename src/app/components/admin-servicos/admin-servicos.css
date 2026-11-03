@@ -10,3 +10,7 @@ h1 { margin: 0 0 1rem; font-size: 1.5rem; }
 @media (max-width: 520px) {
   .largo { grid-column: span 1; }
 }
+
+.botao.excluir { color: var(--erro); border-color: var(--erro); }
+.botao.excluir:hover { background: #fbe1e8; border-color: var(--erro); }
+.botao.excluir:disabled { background: var(--borda); border-color: var(--borda); color: var(--texto-suave); }

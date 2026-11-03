@@ -1,11 +1,12 @@
 import { inject, Injectable } from '@angular/core';
-import { forkJoin, map } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { catchError, forkJoin, map, Observable, of, switchMap, throwError } from 'rxjs';
+import { Item, ProdutoLeitura } from '../models/models';
 import { CategoriaService } from './categoria.service';
 import { EstoqueService } from './estoque.service';
 import { ItemService } from './item.service';
 import { ProdutoService } from './produto.service';
 
-// visão única do que a loja vende: produto e serviço com o mesmo formato
 export interface ItemCatalogo {
   idItem: number;
   nome: string;
@@ -13,9 +14,22 @@ export interface ItemCatalogo {
   idCategoria: number;
   categoria: string;
   tipo: 'P' | 'S';
-  preco: number;          // preço de venda (produto: precoVenda; serviço: item.preco)
+  preco: number;
   unidade: string;
-  estoque: number | null; // null = serviço, que não tem estoque
+  estoque: number | null;
+}
+
+export interface Disponibilidade {
+  disponivel: boolean;
+  texto: string;
+}
+
+export function disponibilidadeItem(item: ItemCatalogo): Disponibilidade {
+  const estoque = item.estoque;
+  if (estoque === null) return { disponivel: true, texto: 'Disponível' };
+  return estoque > 0
+    ? { disponivel: true, texto: `Em estoque: ${estoque}` }
+    : { disponivel: false, texto: 'Indisponível' };
 }
 
 @Injectable({ providedIn: 'root' })
@@ -38,29 +52,17 @@ export class CatalogoService {
         const categoriaPorId = new Map(categorias.map(c => [c.idcategoria, c.categoria] as const));
 
         const catalogo: ItemCatalogo[] = [];
-        for (const i of itens) {
-          if (i.ativoProdutoServico !== 'S') continue; // só ativos
+        for (const item of itens) {
+          if (item.ativoProdutoServico !== 'S') continue;
 
-          const base = {
-            idItem: i.idItem,
-            nome: i.item,
-            descricao: i.descricaoItem,
-            idCategoria: i.idCategoria,
-            categoria: categoriaPorId.get(i.idCategoria) ?? i.categoria ?? '',
-          };
+          const categoria = categoriaPorId.get(item.idCategoria) ?? item.categoria ?? '';
 
-          if (i.tipoItem === 'P') {
-            const produto = produtoPorId.get(i.idItem);
-            if (!produto) continue; // produto sem registro em produto: não dá para precificar
-            catalogo.push({
-              ...base,
-              tipo: 'P',
-              preco: produto.precoVenda,
-              unidade: (produto.unidade ?? '').trim(),
-              estoque: estoquePorId.get(i.idItem) ?? 0,
-            });
+          if (item.tipoItem === 'P') {
+            const produto = produtoPorId.get(item.idItem);
+            if (!produto) continue;
+            catalogo.push(this.deProduto(item, categoria, produto, estoquePorId.get(item.idItem) ?? 0));
           } else {
-            catalogo.push({ ...base, tipo: 'S', preco: i.preco, unidade: '', estoque: null });
+            catalogo.push(this.deServico(item, categoria));
           }
         }
 
@@ -68,5 +70,56 @@ export class CatalogoService {
         return { itens: catalogo, categorias };
       }),
     );
+  }
+
+  obter(id: number): Observable<ItemCatalogo> {
+    return this.itens.obter(id).pipe(
+      switchMap(item => {
+        if (item.ativoProdutoServico !== 'S') {
+          return throwError(
+            () => new HttpErrorResponse({ status: 404, error: { mensagem: 'ITEM INDISPONÍVEL!' } }),
+          );
+        }
+
+        const categoria = item.categoria ?? '';
+        if (item.tipoItem !== 'P') return of(this.deServico(item, categoria));
+
+        return forkJoin({
+          produto: this.produtos.obter(id),
+          estoque: this.estoques.obter(id).pipe(
+            map(e => e.quantidadeEstoque),
+            catchError((e: HttpErrorResponse) => (e.status === 404 ? of(0) : throwError(() => e))),
+          ),
+        }).pipe(map(({ produto, estoque }) => this.deProduto(item, categoria, produto, estoque)));
+      }),
+    );
+  }
+
+  private deProduto(item: Item, categoria: string, produto: ProdutoLeitura, estoque: number): ItemCatalogo {
+    return {
+      idItem: item.idItem,
+      nome: item.item,
+      descricao: item.descricaoItem,
+      idCategoria: item.idCategoria,
+      categoria,
+      tipo: 'P',
+      preco: produto.precoVenda,
+      unidade: (produto.unidade ?? '').trim(),
+      estoque,
+    };
+  }
+
+  private deServico(item: Item, categoria: string): ItemCatalogo {
+    return {
+      idItem: item.idItem,
+      nome: item.item,
+      descricao: item.descricaoItem,
+      idCategoria: item.idCategoria,
+      categoria,
+      tipo: 'S',
+      preco: item.preco,
+      unidade: '',
+      estoque: null,
+    };
   }
 }
