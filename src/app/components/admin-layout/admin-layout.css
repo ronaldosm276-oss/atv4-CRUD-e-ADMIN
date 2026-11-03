@@ -1,0 +1,29 @@
+.admin { display: grid; grid-template-columns: 15rem 1fr; min-height: 100vh; }
+
+.lateral { position: sticky; top: 0; display: flex; flex-direction: column; gap: 1.25rem; height: 100vh;
+  padding: 1.25rem 1rem; overflow-y: auto; background: var(--superficie); border-right: 1px solid var(--borda); }
+
+.marca { display: flex; flex-direction: column; font-size: 1.3rem; font-weight: 800; color: var(--destaque);
+  text-decoration: none; line-height: 1.1; }
+.marca small { margin-top: .2rem; font-size: .7rem; font-weight: 600; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--texto-suave); }
+
+nav { display: flex; flex-direction: column; gap: .15rem; }
+nav a { padding: .55rem .75rem; border-radius: 8px; color: var(--texto-suave); text-decoration: none; font-weight: 500; }
+nav a:hover { background: var(--superficie-alt); color: var(--texto); }
+nav a.ativo { background: var(--destaque-suave); color: var(--destaque-escuro); font-weight: 600; }
+
+.voltar { margin-top: auto; padding: .55rem .75rem; border: 1px solid var(--borda); border-radius: 8px;
+  color: var(--destaque); text-decoration: none; font-weight: 600; text-align: center; }
+.voltar:hover { background: var(--destaque-suave); border-color: var(--destaque); }
+
+.principal { min-width: 0; max-width: 1200px; padding: 1.5rem; }
+
+@media (max-width: 800px) {
+  .admin { grid-template-columns: 1fr; }
+  .lateral { position: static; flex-direction: row; align-items: center; flex-wrap: wrap; gap: .75rem;
+    height: auto; border-right: 0; border-bottom: 1px solid var(--borda); }
+  nav { flex-direction: row; flex-wrap: wrap; }
+  .voltar { margin-top: 0; }
+  .principal { padding: 1rem; }
+}

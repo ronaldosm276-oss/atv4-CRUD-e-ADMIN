@@ -124,6 +124,10 @@
                   [disabled]="processando() === p.iditem" (click)="alternarAtivo(p)">
                   {{ ativo(p) ? 'Desativar' : 'Ativar' }}
                 </button>
+                <button type="button" class="botao secundario pequeno excluir"
+                  [disabled]="processando() === p.iditem" (click)="excluir(p)">
+                  Excluir
+                </button>
               </td>
             </tr>
           }

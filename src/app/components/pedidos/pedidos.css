@@ -1,3 +1,3 @@
-h1 { margin: 0 0 1rem; font-size: 1.4rem; }
-.nota { font-size: .85rem; color: #5b6b66; }
-.detalhe > td { background: #f3f6f4; padding: .75rem; }
+h1 { margin: 0 0 1rem; font-size: 1.5rem; }
+.nota { font-size: .85rem; color: var(--texto-suave); }
+.detalhe > td { background: var(--superficie-alt); padding: .75rem; }

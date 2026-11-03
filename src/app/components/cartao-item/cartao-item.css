@@ -1,11 +1,16 @@
 .cartao { display: flex; flex-direction: column; gap: .4rem; height: 100%; padding: 1rem;
-  background: var(--papel); border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, .15); }
-.etiqueta { font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: #5b6b66; }
+  background: var(--superficie); border: 1px solid var(--borda); border-radius: var(--raio);
+  transition: box-shadow .15s, transform .15s; }
+.cartao:hover { box-shadow: 0 6px 18px rgba(106, 79, 214, .15); transform: translateY(-2px); }
+.etiqueta { align-self: flex-start; padding: .1rem .6rem; border-radius: 999px; background: var(--destaque-suave);
+  color: var(--destaque-escuro); font-size: .72rem; font-weight: 600; }
 h3 { margin: 0; font-size: 1.05rem; }
-.descricao { flex: 1; margin: 0; font-size: .9rem; color: #44524e; }
-.preco { margin: 0; font-size: 1.15rem; font-weight: 700; }
-.preco small { font-weight: 400; color: #5b6b66; }
-.disponibilidade { margin: 0; font-size: .85rem; color: #2e7d32; }
+.descricao { flex: 1; margin: 0; font-size: .9rem; color: var(--texto-suave); }
+.preco { margin: 0; font-size: 1.2rem; font-weight: 800; }
+.preco small { font-weight: 400; color: var(--texto-suave); }
+.disponibilidade { margin: 0; font-size: .85rem; color: var(--sucesso); }
 .disponibilidade.sem { color: var(--erro); }
-button { padding: .55rem; border: 0; border-radius: 4px; background: var(--verde); color: #fff; cursor: pointer; }
-button:disabled { background: #9aa6a2; cursor: not-allowed; }
+button { padding: .6rem; border: 0; border-radius: 8px; background: var(--destaque); color: #fff;
+  font: inherit; font-weight: 600; cursor: pointer; }
+button:hover:not(:disabled) { background: var(--destaque-escuro); }
+button:disabled { background: var(--borda); color: var(--texto-suave); cursor: not-allowed; }

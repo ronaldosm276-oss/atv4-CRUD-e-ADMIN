@@ -184,6 +184,31 @@ export class AdminProdutos {
     });
   }
 
+  // a API só apaga o produto se ele não tiver entradas de estoque nem pedidos; nos demais casos a saída é desativar
+  protected excluir(p: ProdutoLeitura) {
+    const nome = p.iditemNavigation.item1;
+    if (!confirm(`Excluir definitivamente o produto "${nome}"? Esta ação não pode ser desfeita.`)) return;
+
+    this.processando.set(p.iditem);
+    this.produtosApi.excluir(p.iditem).subscribe({
+      next: () => {
+        this.processando.set(null);
+        this.mensagens.sucesso('Produto excluído.');
+        if (this.editando()?.iditem === p.iditem) this.cancelar();
+        this.recarregar();
+      },
+      error: (e: HttpErrorResponse) => {
+        this.processando.set(null);
+        // 404 e falha de conexão têm mensagem própria; o resto costuma ser vínculo com entradas ou pedidos
+        this.mensagens.erro(
+          e.status === 404 || e.status === 0
+            ? mensagemErro(e)
+            : `Não foi possível excluir "${nome}". Provavelmente ele já tem entradas de estoque ou pedidos; use "Desativar" para tirá-lo da loja.`,
+        );
+      },
+    });
+  }
+
   // produto com vendas ou entradas não deve ser apagado: desativar o tira da loja e mantém o histórico
   protected alternarAtivo(p: ProdutoLeitura) {
     const n = p.iditemNavigation;

@@ -6,6 +6,7 @@ import { Mensagem } from '../mensagem/mensagem';
   selector: 'app-admin-layout',
   imports: [RouterOutlet, RouterLink, RouterLinkActive, Mensagem],
   templateUrl: './admin-layout.html',
+  styleUrl: './admin-layout.css',
 })
 export class AdminLayout {
   protected readonly itens = [
