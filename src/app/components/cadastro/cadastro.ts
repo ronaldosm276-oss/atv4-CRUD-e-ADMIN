@@ -2,13 +2,13 @@ import { Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import { MensagemService } from '../../services/mensagem.service';
 import { Pessoa } from '../../models/models';
 import { PessoaService } from '../../services/pessoa.service';
-import { SessaoService } from '../../services/sessao.service';
 import { mensagemErro } from '../../utils/util';
 import {
-  cepValido, cpfValido, dataNascimentoValida, soDigitos, telefoneValido,
+  cepValido, cpfValido, dataNascimentoValida, senhasIguais, senhaValida, soDigitos, telefoneValido,
 } from '../../utils/validadores';
 import { Identificacao } from '../identificacao/identificacao';
 
@@ -21,26 +21,32 @@ import { Identificacao } from '../identificacao/identificacao';
 export class Cadastro {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly pessoas = inject(PessoaService);
-  private readonly sessao = inject(SessaoService);
+  private readonly auth = inject(AuthService);
   private readonly mensagens = inject(MensagemService);
   private readonly router = inject(Router);
 
   protected readonly salvando = signal(false);
+  protected readonly mostrar = signal(false);
 
   // limites vêm do schema do banco (VARCHAR/CHAR)
-  protected readonly form = this.fb.group({
-    nome: ['', [Validators.required, Validators.maxLength(100)]],
-    cpf: ['', [Validators.required, cpfValido]],
-    dataNascimento: ['', [Validators.required, dataNascimentoValida]],
-    sexo: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email, Validators.maxLength(100)]],
-    telefone: ['', [Validators.required, telefoneValido]],
-    endereco: this.fb.group({
-      cep: ['', [Validators.required, cepValido]],
-      numero: ['', [Validators.required, Validators.maxLength(10)]],
-      complemento: ['', [Validators.required, Validators.maxLength(150)]],
-    }),
-  });
+  protected readonly form = this.fb.group(
+    {
+      nome: ['', [Validators.required, Validators.maxLength(100)]],
+      cpf: ['', [Validators.required, cpfValido]],
+      dataNascimento: ['', [Validators.required, dataNascimentoValida]],
+      sexo: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(100)]],
+      telefone: ['', [Validators.required, telefoneValido]],
+      senha: ['', [Validators.required, senhaValida]],
+      confirmacao: ['', Validators.required],
+      endereco: this.fb.group({
+        cep: ['', [Validators.required, cepValido]],
+        numero: ['', [Validators.required, Validators.maxLength(10)]],
+        complemento: ['', [Validators.required, Validators.maxLength(150)]],
+      }),
+    },
+    { validators: senhasIguais },
+  );
 
   protected invalido(caminho: string): boolean {
     const c = this.form.get(caminho);
@@ -58,6 +64,8 @@ export class Cadastro {
     if (e['cep']) return 'O CEP deve ter 8 dígitos.';
     if (e['futura']) return 'A data de nascimento não pode ser futura.';
     if (e['data']) return 'Data de nascimento inválida.';
+    if (e['senhaTamanho']) return 'A senha deve ter de 8 a 32 caracteres.';
+    if (e['senhaTipo']) return 'A senha deve ter pelo menos uma letra e um número.';
     return 'Valor inválido.';
   }
 
@@ -78,6 +86,7 @@ export class Cadastro {
       email: v.email.trim().toLowerCase(),
       telefone: Number(soDigitos(v.telefone)),
       ativoPessoa: 'S',
+      senha: v.senha,
       enderecos: [
         {
           idEndereco: 0,
@@ -91,15 +100,20 @@ export class Cadastro {
 
     this.salvando.set(true);
     this.pessoas.criar(dto).subscribe({
-      next: criada => {
-        this.salvando.set(false);
-        if (criada?.idPessoa) {
-          this.sessao.entrar(criada);
-          this.mensagens.sucesso(`Cadastro realizado! Bem-vindo(a), ${dto.nome.split(' ')[0]}.`);
-        } else {
-          this.mensagens.sucesso('Cadastro realizado! Use seu CPF ou e-mail para se identificar.');
-        }
-        this.router.navigate(['/loja']);
+      next: () => {
+        // já entra com a conta recém-criada
+        this.auth.login(dto.email, v.senha).subscribe({
+          next: () => {
+            this.salvando.set(false);
+            this.mensagens.sucesso(`Cadastro realizado! Bem-vindo(a), ${dto.nome.split(' ')[0]}.`);
+            this.router.navigate(['/loja']);
+          },
+          error: () => {
+            this.salvando.set(false);
+            this.mensagens.sucesso('Cadastro realizado! Entre com seu e-mail e senha.');
+            this.router.navigate(['/loja/entrar']);
+          },
+        });
       },
       error: (e: HttpErrorResponse) => {
         this.salvando.set(false);

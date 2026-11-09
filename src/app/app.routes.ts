@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { adminGuard } from './services/admin.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'loja' },
@@ -9,6 +10,7 @@ export const routes: Routes = [
     loadComponent: () => import('./components/loja-layout/loja-layout').then(m => m.LojaLayout),
     children: [
       { path: '', loadComponent: () => import('./components/catalogo/catalogo').then(m => m.Catalogo) },
+      { path: 'entrar', loadComponent: () => import('./components/entrar/entrar').then(m => m.Entrar) },
       { path: 'cadastro', loadComponent: () => import('./components/cadastro/cadastro').then(m => m.Cadastro) },
       { path: 'carrinho', loadComponent: () => import('./components/carrinho/carrinho').then(m => m.Carrinho) },
       { path: 'pedidos', loadComponent: () => import('./components/pedidos/pedidos').then(m => m.Pedidos) },
@@ -19,6 +21,7 @@ export const routes: Routes = [
   // Painel administrativo
   {
     path: 'admin',
+    canActivate: [adminGuard],
     loadComponent: () => import('./components/admin-layout/admin-layout').then(m => m.AdminLayout),
     children: [
       {

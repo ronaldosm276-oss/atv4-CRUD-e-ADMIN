@@ -10,15 +10,17 @@
         <span class="contador">{{ carrinho.quantidadeTotal() }}</span>
       }
     </a>
-    <a routerLink="/admin">Administração</a>
+    @if (sessao.ehFuncionario()) {
+      <a routerLink="/admin">Administração</a>
+    }
     @if (sessao.cliente(); as c) {
       <span class="cliente">Olá, {{ c.nome.split(' ')[0] }}</span>
       <button type="button" class="sair" (click)="sessao.sair()">Sair</button>
+    } @else {
+      <a routerLink="/loja/entrar" routerLinkActive="ativo">Entrar</a>
     }
   </nav>
 </header>
 <main class="conteudo"><router-outlet /></main>
 <footer class="rodape">© 2026 LOJA RS</footer>
 <app-mensagem />
-
-

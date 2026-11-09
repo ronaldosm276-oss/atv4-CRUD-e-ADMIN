@@ -7,6 +7,7 @@ namespace AplicacaoBackAula.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Funcionario")]
     public class EntradaProdutoController : ControllerBase
     {
         //DECLARAÇÃO DO ATRIBUTO DE CONTEXTO

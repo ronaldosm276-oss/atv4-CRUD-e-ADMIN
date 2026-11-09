@@ -1,11 +1,19 @@
 {
   "Version": 1,
-  "Hash": "TFxRw0XgDufYORaW9TcgP91DA5tMawAfOse+XaYYObw=",
+  "Hash": "hzhdsUToZig9uIn+E3elONQextvblzLpZkrxDg/vfOo=",
   "Source": "AplicacaoBackAula",
   "BasePath": "_content/AplicacaoBackAula",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "AplicacaoBackAula\\wwwroot",
+      "Source": "AplicacaoBackAula",
+      "ContentRoot": "E:\\0-RSM\\98- PROJETOS ANGULAR\\ProjetoRS-ATV4-CRUD_API\\projetoBackEnd\\AplicacaoBackAula\\wwwroot\\",
+      "BasePath": "_content/AplicacaoBackAula",
+      "Pattern": "**"
+    }
+  ],
   "Assets": []
 }

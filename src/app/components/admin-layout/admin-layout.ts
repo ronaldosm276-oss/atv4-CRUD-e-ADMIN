@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { SessaoService } from '../../services/sessao.service';
 import { Mensagem } from '../mensagem/mensagem';
 
 @Component({
@@ -9,6 +10,9 @@ import { Mensagem } from '../mensagem/mensagem';
   styleUrl: './admin-layout.css',
 })
 export class AdminLayout {
+  protected readonly sessao = inject(SessaoService);
+  private readonly router = inject(Router);
+
   protected readonly itens = [
     { rota: '', rotulo: 'Início' },
     { rota: 'clientes', rotulo: 'Clientes' },
@@ -20,4 +24,9 @@ export class AdminLayout {
     { rota: 'entradas', rotulo: 'Entrada de produtos' },
     { rota: 'estoque', rotulo: 'Estoque' },
   ];
+
+  protected sair() {
+    this.sessao.sair();
+    this.router.navigate(['/loja']);
+  }
 }

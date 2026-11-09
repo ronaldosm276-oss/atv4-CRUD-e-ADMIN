@@ -13,5 +13,6 @@
 
         //SOMENTE LEITURA: PREENCHIDO NAS RESPOSTAS E IGNORADO NA ENTRADA
         public string? Categoria { get; set; }
+        public string? ImagemUrl { get; set; }
     }
 }

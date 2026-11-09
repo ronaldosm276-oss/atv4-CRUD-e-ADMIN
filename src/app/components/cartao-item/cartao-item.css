@@ -18,3 +18,6 @@ button:disabled { background: var(--borda); color: var(--texto-suave); cursor: n
 h3 a { color: inherit; text-decoration: none; }
 h3 a:hover { color: var(--destaque); text-decoration: underline; }
 .codigo { font-size: .75rem; color: var(--texto-suave); }
+
+.foto { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; background: #f3f0fa; margin-bottom: .5rem; }
+.sem-foto { display: flex; align-items: center; justify-content: center; color: #7a6e99; font-size: .85rem; }

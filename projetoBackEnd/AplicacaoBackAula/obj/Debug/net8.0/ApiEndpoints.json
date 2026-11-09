@@ -141,6 +141,48 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "AplicacaoBackAula.Controllers.AuthController",
+    "Method": "AlterarSenha",
+    "RelativePath": "api/Auth/alterar-senha",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "AplicacaoBackAula.DTO.AlterarSenhaDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AplicacaoBackAula.Controllers.AuthController",
+    "Method": "Login",
+    "RelativePath": "api/Auth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "AplicacaoBackAula.DTO.LoginDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "AplicacaoBackAula.DTO.LoginRespostaDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "AplicacaoBackAula.Controllers.CategoriumController",
     "Method": "GetCategorias",
     "RelativePath": "api/Categorium",
@@ -514,6 +556,16 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "AplicacaoBackAula.Controllers.FuncionarioController",
+    "Method": "GetAtendentes",
+    "RelativePath": "api/Funcionario/atendentes",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "AplicacaoBackAula.Controllers.ItemController",
     "Method": "GetAll",
     "RelativePath": "api/Item",
@@ -616,6 +668,59 @@
     "Parameters": [
       {
         "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AplicacaoBackAula.Controllers.ImagemItemController",
+    "Method": "Get",
+    "RelativePath": "api/Item/{idItem}/imagem",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idItem",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AplicacaoBackAula.Controllers.ImagemItemController",
+    "Method": "Post",
+    "RelativePath": "api/Item/{idItem}/imagem",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idItem",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "arquivo",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AplicacaoBackAula.Controllers.ImagemItemController",
+    "Method": "Delete",
+    "RelativePath": "api/Item/{idItem}/imagem",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idItem",
         "Type": "System.Int32",
         "IsRequired": true
       }

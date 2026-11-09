@@ -7,6 +7,7 @@ namespace AplicacaoBackAula.Controllers
     
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Funcionario")]
     public class CategoriumController : ControllerBase
     {
         private readonly BdAulaBackendContext _context;
@@ -17,6 +18,7 @@ namespace AplicacaoBackAula.Controllers
         }
 
         // GET: api/Categorium
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Categorium>>> GetCategorias()
         {
@@ -25,6 +27,7 @@ namespace AplicacaoBackAula.Controllers
 
 
         // GET: api/Categorium/5
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<Categorium>> GetCategoria(int id)
         {

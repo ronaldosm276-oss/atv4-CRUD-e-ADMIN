@@ -13,6 +13,7 @@
 
 @if (item(); as i) {
   <article class="painel">
+    @if (i.imagemUrl) { <img class="foto-grande" [src]="i.imagemUrl" [alt]="i.nome"> }
     <span class="etiqueta">{{ i.tipo === 'P' ? 'Produto' : 'Serviço' }} · {{ i.categoria }}</span>
     <h1>{{ i.nome }}</h1>
     <span class="codigo">ID {{ i.idItem }}</span>

@@ -9,10 +9,11 @@ import { MensagemService } from '../../services/mensagem.service';
 import { mensagemErro } from '../../utils/util';
 import { duasCasas } from '../../utils/validadores';
 import { Moeda } from '../../pipes/moeda.pipe';
+import { ImagemItem } from '../imagem-item/imagem-item';
 
 @Component({
   selector: 'app-admin-servicos',
-  imports: [ReactiveFormsModule, Moeda],
+  imports: [ReactiveFormsModule, Moeda, ImagemItem],
   templateUrl: './admin-servicos.html',
   styleUrl: './admin-servicos.css',
 })
@@ -91,6 +92,10 @@ export class AdminServicos {
         this.erroLista.set(mensagemErro(e));
       },
     });
+  }
+
+  protected imagemAlterada(id: number, url: string | null) {
+    this.servicos.update(lista => lista.map(s => (s.idItem === id ? { ...s, imagemUrl: url } : s)));
   }
 
   protected recarregar() {

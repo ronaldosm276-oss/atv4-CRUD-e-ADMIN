@@ -7,6 +7,7 @@ namespace AplicacaoBackAula.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Funcionario")]
     public class PessoaEnderecoController : ControllerBase
     // isso serviu para
     {
@@ -93,6 +94,7 @@ namespace AplicacaoBackAula.Controllers
         }//FIM MÉTODO GetPessoa
 
         //DECLARAÇÃO DO MÉTODO PARA CADASTRAR UMA PESSOA E SEUS ENDEREÇOS
+        [AllowAnonymous]
         [HttpPost]
         public async Task<ActionResult<PessoaDTO>> Post(PessoaDTO dto)
         {
@@ -116,6 +118,12 @@ namespace AplicacaoBackAula.Controllers
             }
 
             //PROJETA OS DADOS DO PessoaDTO PARA O MODELO Pessoa (COM A LISTA DE ENDEREÇOS)
+            var erroSenha = PoliticaSenha.Validar(dto.Senha);
+            if (erroSenha != null)
+            {
+                return BadRequest(new { mensagem = erroSenha });
+            }
+
             var pessoa = new Pessoa
             {
                 Nome = dto.Nome!,
@@ -137,6 +145,7 @@ namespace AplicacaoBackAula.Controllers
             //UM ÚNICO SaveChanges GRAVA A PESSOA E OS ENDEREÇOS NA MESMA TRANSAÇÃO
             try
             {
+                pessoa.Credencial = new Credencial { SenhaHash = Senhas.Hash(dto.Senha!), AtualizadaEm = DateTime.Now };
                 _context.Pessoas.Add(pessoa);
                 await _context.SaveChangesAsync();
             }
@@ -224,6 +233,25 @@ namespace AplicacaoBackAula.Controllers
             pessoa.Email = dto.email;
             pessoa.Telefone = (ulong)dto.telefone;
             pessoa.AtivoPessoa = dto.AtivoPessoa;
+            if (!string.IsNullOrEmpty(dto.Senha))
+            {
+                var erroSenha = PoliticaSenha.Validar(dto.Senha);
+                if (erroSenha != null)
+                {
+                    return BadRequest(new { mensagem = erroSenha });
+                }
+
+                var cred = await _context.Credenciais.FindAsync(id);
+                if (cred == null)
+                {
+                    _context.Credenciais.Add(new Credencial { Idpessoa = id, SenhaHash = Senhas.Hash(dto.Senha), AtualizadaEm = DateTime.Now });
+                }
+                else
+                {
+                    cred.SenhaHash = Senhas.Hash(dto.Senha);
+                    cred.AtualizadaEm = DateTime.Now;
+                }
+            }
 
             //PERCORRE OS ENDEREÇOS ENVIADOS
             foreach (var endPessoa in dto.Enderecos ?? new List<EnderecoDTO>())

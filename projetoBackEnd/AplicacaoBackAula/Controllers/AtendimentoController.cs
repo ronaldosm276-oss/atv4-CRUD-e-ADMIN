@@ -8,6 +8,7 @@ namespace AplicacaoBackAula.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class AtendimentoController : ControllerBase
     {
         //DECLARAÇÃO DO ATRIBUTO DE CONTEXTO
@@ -27,6 +28,7 @@ namespace AplicacaoBackAula.Controllers
         {
             //COMEÇA COM TODOS OS ATENDIMENTOS E VAI APLICANDO OS FILTROS RECEBIDOS
             var consulta = _context.Atendimentos.AsQueryable();
+            if (!User.EhFuncionario()) idPessoa = User.IdPessoa(); //CLIENTE SO LISTA OS PROPRIOS PEDIDOS
 
             if (idPessoa.HasValue)
                 consulta = consulta.Where(a => a.Idpessoa == idPessoa.Value);
@@ -102,6 +104,7 @@ namespace AplicacaoBackAula.Controllers
                     });
             }
 
+            if (!User.EhFuncionario() && atendimento.IdPessoa != User.IdPessoa()) return Forbid();
             return Ok(atendimento);
 
         }//FIM MÉTODO GetAtendimento
@@ -193,6 +196,7 @@ namespace AplicacaoBackAula.Controllers
         [HttpPost]
         public async Task<ActionResult<AtendimentoDTO>> Post(AtendimentoDTO dto)
         {
+            if (!User.EhFuncionario()) { if (dto.IdPessoa != User.IdPessoa()) return Forbid(); dto.StatusAtendimento = "A"; } //CLIENTE SO CRIA PEDIDO PROPRIO E ABERTO
             //VALIDA OS CAMPOS ANTES DE CONSULTAR O BANCO
             var erro = ValidarAtendimento(dto);
             if (erro != null)
@@ -245,6 +249,7 @@ namespace AplicacaoBackAula.Controllers
         }//FIM MÉTODO Post
 
         //DECLARAÇÃO DO MÉTODO PARA ATUALIZAR UM ATENDIMENTO E SEUS ITENS
+        [Authorize(Roles = "Funcionario")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, AtendimentoDTO dto)
         {
@@ -370,6 +375,7 @@ namespace AplicacaoBackAula.Controllers
         };
 
         //DECLARAÇÃO DO MÉTODO PARA ALTERAR SOMENTE O STATUS DE UM ATENDIMENTO
+        [Authorize(Roles = "Funcionario")]
         [HttpPut("{id}/status")]
         public async Task<IActionResult> PutStatus(int id, StatusAtendimentoDTO dto)
         {
@@ -417,6 +423,7 @@ namespace AplicacaoBackAula.Controllers
             return NoContent();
         }//FIM MÉTODO PutStatus
         //DECLARAÇÃO DO MÉTODO PARA EXCLUIR UM ATENDIMENTO E SEUS ITENS
+        [Authorize(Roles = "Funcionario")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

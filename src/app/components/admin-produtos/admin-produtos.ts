@@ -9,10 +9,12 @@ import { ProdutoService } from '../../services/produto.service';
 import { mensagemErro } from '../../utils/util';
 import { duasCasas } from '../../utils/validadores';
 import { Moeda } from '../../pipes/moeda.pipe';
+import { ItemService } from '../../services/item.service';
+import { ImagemItem } from '../imagem-item/imagem-item';
 
 @Component({
   selector: 'app-admin-produtos',
-  imports: [ReactiveFormsModule, Moeda],
+  imports: [ReactiveFormsModule, Moeda, ImagemItem],
   templateUrl: './admin-produtos.html',
   styleUrl: './admin-produtos.css',
 })
@@ -21,11 +23,13 @@ export class AdminProdutos {
   private readonly produtosApi = inject(ProdutoService);
   private readonly categoriasApi = inject(CategoriaService);
   private readonly mensagens = inject(MensagemService);
+  private readonly itensApi = inject(ItemService);
 
   protected readonly produtos = signal<ProdutoLeitura[]>([]);
   protected readonly categorias = signal<Categoria[]>([]);
   protected readonly carregando = signal(true);
   protected readonly erroLista = signal<string | null>(null);
+  protected readonly imagens = signal<Record<string, string | null>>({});
   protected readonly salvando = signal(false);
   protected readonly processando = signal<number | null>(null);
   protected readonly editando = signal<ProdutoLeitura | null>(null);
@@ -85,8 +89,9 @@ export class AdminProdutos {
   protected carregar() {
     this.carregando.set(true);
     this.erroLista.set(null);
-    forkJoin({ produtos: this.produtosApi.listar(), categorias: this.categoriasApi.listar() }).subscribe({
-      next: ({ produtos, categorias }) => {
+    forkJoin({ produtos: this.produtosApi.listar(), categorias: this.categoriasApi.listar(), itens: this.itensApi.listar() }).subscribe({
+      next: ({ produtos, categorias, itens }) => {
+        this.imagens.set(Object.fromEntries(itens.map(i => [i.idItem, i.imagemUrl ?? null])));
         this.categorias.set([...categorias].sort((a, b) => a.categoria.localeCompare(b.categoria, 'pt-BR')));
         this.produtos.set(
           [...produtos].sort((a, b) =>
@@ -99,6 +104,10 @@ export class AdminProdutos {
         this.erroLista.set(mensagemErro(e));
       },
     });
+  }
+
+  protected imagemAlterada(id: number, url: string | null) {
+    this.imagens.update(m => ({ ...m, [id]: url }));
   }
 
   protected recarregar() {

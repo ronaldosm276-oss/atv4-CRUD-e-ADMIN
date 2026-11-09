@@ -50,6 +50,27 @@
     </label>
   </div>
 
+  <div class="linha">
+    <label class="campo">
+      Senha
+      <input [type]="mostrar() ? 'text' : 'password'" formControlName="senha" autocomplete="new-password" maxlength="32">
+      @if (invalido('senha')) { <small class="erro">{{ erro('senha') }}</small> }
+      <small class="dica">8 a 32 caracteres, com letra e número.</small>
+    </label>
+
+    <label class="campo">
+      Confirmar senha
+      <input [type]="mostrar() ? 'text' : 'password'" formControlName="confirmacao" autocomplete="new-password" maxlength="32">
+      @if (form.controls.confirmacao.touched && form.hasError('senhasDiferentes')) {
+        <small class="erro">As senhas não conferem.</small>
+      }
+    </label>
+
+    <label class="mostrar">
+      <input type="checkbox" [checked]="mostrar()" (change)="mostrar.set(!mostrar())"> Mostrar senha
+    </label>
+  </div>
+
   <h2 class="subtitulo">Endereço</h2>
   <div class="linha" formGroupName="endereco">
     <label class="campo">

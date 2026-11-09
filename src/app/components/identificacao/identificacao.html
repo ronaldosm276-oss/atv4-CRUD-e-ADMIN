@@ -1,10 +1,23 @@
-<form class="identificacao" (submit)="$event.preventDefault(); entrar()">
+<form class="identificacao" [formGroup]="form" (ngSubmit)="entrar()" novalidate>
   <label class="campo">
     CPF ou e-mail
-    <input type="text" [formControl]="campo" placeholder="000.000.000-00 ou nome@email.com" autocomplete="off">
-    @if (campo.invalid && campo.touched) {
+    <input type="text" formControlName="login" autocomplete="username" placeholder="000.000.000-00 ou nome@email.com">
+    @if (form.controls.login.invalid && form.controls.login.touched) {
       <small class="erro">Informe o CPF ou o e-mail.</small>
     }
   </label>
-  <button type="submit" class="botao" [disabled]="buscando()">{{ buscando() ? 'Buscando...' : 'Entrar' }}</button>
+
+  <label class="campo">
+    Senha
+    <input [type]="mostrar() ? 'text' : 'password'" formControlName="senha" autocomplete="current-password" maxlength="32">
+    @if (form.controls.senha.invalid && form.controls.senha.touched) {
+      <small class="erro">Informe a senha.</small>
+    }
+  </label>
+
+  <label class="mostrar">
+    <input type="checkbox" [checked]="mostrar()" (change)="mostrar.set(!mostrar())"> Mostrar senha
+  </label>
+
+  <button type="submit" class="botao" [disabled]="enviando()">{{ enviando() ? 'Entrando...' : 'Entrar' }}</button>
 </form>

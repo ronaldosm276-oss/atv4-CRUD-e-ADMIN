@@ -2,7 +2,7 @@ export interface Categoria { idcategoria: number; categoria: string; }
 
 export interface Item {
   idItem: number; idCategoria: number; item: string; descricaoItem: string;
-  preco: number; tipoItem: string; ativoProdutoServico: string; categoria?: string;
+  preco: number; tipoItem: string; ativoProdutoServico: string; categoria?: string; imagemUrl?: string | null;
 }
 
 // leitura (GET /api/ProdutoItem)
@@ -23,7 +23,7 @@ export interface ProdutoEnvio {
 export interface Endereco { idEndereco: number; idPessoa: number; cep: string; numero: string; complemento: string; }
 export interface Pessoa {
   idPessoa: number; nome: string; cpf: number; dataNascimento: string; sexo: string;
-  email: string; telefone: number; ativoPessoa: string; enderecos: Endereco[];
+  email: string; telefone: number; ativoPessoa: string; enderecos: Endereco[]; senha?: string;
 }
 export interface Funcionario extends Pessoa { cargo: string; dataAdmissao: string; }
 

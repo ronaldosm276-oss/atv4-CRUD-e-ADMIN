@@ -8,6 +8,7 @@ namespace AplicacaoBackAula.Controllers
     //DEFINIDO ANOTAÇÕES PARA EF IDENTIFICAR QUE É UMA CONTROLLER
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Funcionario")]
     public class ProdutoItemController : ControllerBase
     {
         //DEFININDO UM ATRIBUTO GLOBAL DO TIPO BdAulaBackendContext
@@ -21,6 +22,7 @@ namespace AplicacaoBackAula.Controllers
         }
 
         //LISTAR TODOS OS PRODUTOS
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutos()
         {
@@ -32,6 +34,7 @@ namespace AplicacaoBackAula.Controllers
         }
 
         //LISTAR APENAS UM PRODUTO
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<ProdutoDTO>> GetProduto(int id)
         {
@@ -212,7 +215,8 @@ namespace AplicacaoBackAula.Controllers
                 _context.Produtos.Remove(produto);
                 await _context.SaveChangesAsync();
 
-                // Busca e remove o item correspondente
+                await ImagemArquivos.ApagarDoItemAsync(_context, id);
+            // Busca e remove o item correspondente
                 var item = await _context.Items
                     .FirstOrDefaultAsync(i => i.Iditem == id);
 

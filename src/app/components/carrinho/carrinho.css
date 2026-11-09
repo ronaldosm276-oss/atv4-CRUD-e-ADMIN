@@ -2,3 +2,7 @@ h1 { margin: 0 0 1rem; font-size: 1.5rem; }
 .tipo { display: block; font-size: .75rem; color: var(--texto-suave); }
 .atendente { max-width: 26rem; margin-bottom: .75rem; }
 .nota { font-size: .85rem; color: var(--texto-suave); }
+
+.item-linha { display: inline-flex; align-items: center; gap: .6rem; }
+.miniatura { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; background: #f3f0fa; flex: none; }
+.sem-foto { display: inline-flex; align-items: center; justify-content: center; color: #7a6e99; font-size: .8rem; }

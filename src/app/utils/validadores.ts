@@ -48,3 +48,17 @@ export function duasCasas(c: AbstractControl): ValidationErrors | null {
   const n = Number(valor);
   return Number.isFinite(n) && Math.abs(n * 100 - Math.round(n * 100)) < 1e-6 ? null : { casas: true };
 }
+
+// mesma regra da API: 8 a 32 caracteres, com letra e numero (repeticao, sequencia e senhas comuns a API recusa)
+export function senhaValida(c: AbstractControl): ValidationErrors | null {
+  const s = String(c.value ?? '');
+  if (!s) return null;
+  if (s.length < 8 || s.length > 32) return { senhaTamanho: true };
+  if (!/\p{L}/u.test(s) || !/\d/.test(s)) return { senhaTipo: true };
+  return null;
+}
+
+// validador do grupo: campos "senha" e "confirmacao"
+export function senhasIguais(g: AbstractControl): ValidationErrors | null {
+  return g.get('senha')?.value === g.get('confirmacao')?.value ? null : { senhasDiferentes: true };
+}

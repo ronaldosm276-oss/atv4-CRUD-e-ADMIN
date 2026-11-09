@@ -7,6 +7,7 @@ namespace AplicacaoBackAula.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Funcionario")]
     public class FuncionarioController : ControllerBase
     {
         //declaração do atributo de contexto
@@ -97,6 +98,20 @@ namespace AplicacaoBackAula.Controllers
 
         }
         //DECLARAÇÃO DO MÉTODO PARA CADASTRAR UM FUNCIONÁRIO
+        //LISTA MINIMA (ID, NOME, CARGO) PARA O CLIENTE ESCOLHER O ATENDENTE NO CARRINHO, SEM CPF/E-MAIL/TELEFONE
+        [AllowAnonymous]
+        [HttpGet("atendentes")]
+        public async Task<ActionResult> GetAtendentes()
+        {
+            var atendentes = await _context.Funcionarios
+                .Where(f => f.IdpessoaNavigation.AtivoPessoa == "S")
+                .OrderBy(f => f.IdpessoaNavigation.Nome)
+                .Select(f => new { idPessoa = f.Idpessoa, nome = f.IdpessoaNavigation.Nome, cargo = f.Cargo })
+                .ToListAsync();
+
+            return Ok(atendentes);
+        }
+
         [HttpPost]
         public async Task<ActionResult<FuncionarioDTO>> Post(FuncionarioDTO dto)
         {
@@ -121,6 +136,12 @@ namespace AplicacaoBackAula.Controllers
             }
 
             //PROJETA OS DADOS DO DTO PARA O MODELO Pessoa, JÁ COM OS ENDEREÇOS E O FUNCIONÁRIO DENTRO
+            var erroSenha = PoliticaSenha.Validar(dto.Senha);
+            if (erroSenha != null)
+            {
+                return BadRequest(new { mensagem = erroSenha });
+            }
+
             var pessoa = new Pessoa
             {
                 Nome = dto.Nome!,
@@ -148,6 +169,7 @@ namespace AplicacaoBackAula.Controllers
             };
 
             //UM ÚNICO SaveChanges GRAVA AS TRÊS TABELAS NA MESMA TRANSAÇÃO
+            pessoa.Credencial = new Credencial { SenhaHash = Senhas.Hash(dto.Senha!), AtualizadaEm = DateTime.Now };
             _context.Pessoas.Add(pessoa);
             try
             {
@@ -160,6 +182,7 @@ namespace AplicacaoBackAula.Controllers
 
             //DEVOLVE OS DADOS COM OS IDS QUE O BANCO GEROU
             dto.IdPessoa = pessoa.Idpessoa;
+            dto.Senha = null; //A SENHA NAO VOLTA NA RESPOSTA
             dto.Enderecos = pessoa.Enderecos.Select(e => new EnderecoDTO
             {
                 IdEndereco = e.Idendereco,
@@ -223,6 +246,25 @@ namespace AplicacaoBackAula.Controllers
             pessoa.Email = dto.email;
             pessoa.Telefone = (ulong)dto.telefone;
             pessoa.AtivoPessoa = dto.AtivoPessoa;
+            if (!string.IsNullOrEmpty(dto.Senha))
+            {
+                var erroSenha = PoliticaSenha.Validar(dto.Senha);
+                if (erroSenha != null)
+                {
+                    return BadRequest(new { mensagem = erroSenha });
+                }
+
+                var cred = await _context.Credenciais.FindAsync(id);
+                if (cred == null)
+                {
+                    _context.Credenciais.Add(new Credencial { Idpessoa = id, SenhaHash = Senhas.Hash(dto.Senha), AtualizadaEm = DateTime.Now });
+                }
+                else
+                {
+                    cred.SenhaHash = Senhas.Hash(dto.Senha);
+                    cred.AtualizadaEm = DateTime.Now;
+                }
+            }
 
             //COPIA OS DADOS DE FUNCIONÁRIO
             funcionario.Cargo = dto.Cargo;

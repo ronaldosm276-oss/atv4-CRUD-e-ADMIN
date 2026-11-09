@@ -1,14 +1,16 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
-import { Funcionario, AtendimentoEnvio } from '../../models/models';
+import { AtendimentoEnvio } from '../../models/models';
 import { AtendimentoService } from '../../services/atendimento.service';
 import { CarrinhoService } from '../../services/carrinho.service';
-import { FuncionarioService } from '../../services/funcionario.service';
+import { Atendente, AtendenteService } from '../../services/atendente.service';
 import { MensagemService } from '../../services/mensagem.service';
 import { SessaoService } from '../../services/sessao.service';
 import { hojeLocal, mensagemErro } from '../../utils/util';
 import { Moeda } from '../../pipes/moeda.pipe';
+import { ItemService } from '../../services/item.service';
+import { urlImagem } from '../../utils/api.config';
 import { Identificacao } from '../identificacao/identificacao';
 
 @Component({
@@ -20,23 +22,30 @@ import { Identificacao } from '../identificacao/identificacao';
 export class Carrinho {
   protected readonly carrinho = inject(CarrinhoService);
   protected readonly sessao = inject(SessaoService);
-  private readonly funcionarios = inject(FuncionarioService);
+  private readonly funcionarios = inject(AtendenteService);
   private readonly atendimentos = inject(AtendimentoService);
   private readonly mensagens = inject(MensagemService);
   private readonly router = inject(Router);
+  private readonly itensApi = inject(ItemService);
 
-  protected readonly atendentes = signal<Funcionario[]>([]);
+  protected readonly atendentes = signal<Atendente[]>([]);
   protected readonly idAtendente = signal(0);
   protected readonly enviando = signal(false);
+  protected readonly imagens = signal<Record<number, string | null>>({});
 
   protected readonly podeFinalizar = computed(
     () => this.sessao.cliente() !== null && this.idAtendente() > 0 && this.carrinho.linhas().length > 0,
   );
 
   constructor() {
+    // miniaturas: se falhar, o carrinho funciona normalmente, so sem imagem
+    this.itensApi.listar().subscribe({
+      next: itens => this.imagens.set(Object.fromEntries(itens.map(i => [i.idItem, urlImagem(i.imagemUrl)]))),
+    });
+
     // a API exige o funcionário que atende cada item do pedido
     this.funcionarios.listar().subscribe({
-      next: lista => this.atendentes.set(lista.filter(f => f.ativoPessoa === 'S')),
+      next: lista => this.atendentes.set(lista),
       error: (e: HttpErrorResponse) => this.mensagens.erro(mensagemErro(e)),
     });
   }

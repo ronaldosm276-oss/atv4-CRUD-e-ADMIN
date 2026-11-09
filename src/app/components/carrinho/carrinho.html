@@ -22,7 +22,7 @@
           @for (l of carrinho.linhas(); track l.idItem) {
             <tr>
               <td>
-                {{ l.nome }}
+                <span class="item-linha">@if (imagens()[l.idItem]; as src) { <img class="miniatura" [src]="src" [alt]="l.nome" loading="lazy"> } @else { <span class="miniatura sem-foto" aria-hidden="true">—</span> }<span>{{ l.nome }}</span></span>
                 <small class="tipo">{{ l.tipo === 'P' ? 'Produto' : 'Serviço' }}</small>
               </td>
               <td class="num">{{ l.preco | moeda }}</td>

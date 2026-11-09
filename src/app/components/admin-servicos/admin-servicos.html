@@ -75,6 +75,7 @@
         <thead>
           <tr>
             <th class="num">ID</th>
+            <th>Imagem</th>
             <th>Serviço</th>
             <th>Descrição</th>
             <th>Categoria</th>
@@ -87,6 +88,7 @@
           @for (s of servicos(); track s.idItem) {
             <tr>
               <td class="num">{{ s.idItem }}</td>
+              <td><app-imagem-item [idItem]="s.idItem" [nome]="s.item" [imagemUrl]="s.imagemUrl" (alterada)="imagemAlterada(s.idItem, $event)" /></td>
               <td>{{ s.item }}</td>
               <td class="descricao">{{ s.descricaoItem }}</td>
               <td>{{ categoria(s) }}</td>

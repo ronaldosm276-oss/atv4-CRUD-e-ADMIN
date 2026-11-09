@@ -13,6 +13,7 @@
     </nav>
 
     <a routerLink="/loja" class="voltar">← Ir para a loja</a>
+  <button type="button" class="voltar" (click)="sair()">Sair ({{ sessao.cliente()?.nome }})</button>
   </aside>
 
   <main class="principal"><router-outlet /></main>

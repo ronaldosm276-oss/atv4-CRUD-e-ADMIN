@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, forkJoin, map, Observable, of, switchMap, throwError } from 'rxjs';
 import { Item, ProdutoLeitura } from '../models/models';
+import { urlImagem } from '../utils/api.config';
 import { CategoriaService } from './categoria.service';
 import { EstoqueService } from './estoque.service';
 import { ItemService } from './item.service';
@@ -17,6 +18,7 @@ export interface ItemCatalogo {
   preco: number;
   unidade: string;
   estoque: number | null;
+  imagemUrl: string | null;
 }
 
 export interface Disponibilidade {
@@ -105,6 +107,7 @@ export class CatalogoService {
       tipo: 'P',
       preco: produto.precoVenda,
       unidade: (produto.unidade ?? '').trim(),
+      imagemUrl: urlImagem(item.imagemUrl),
       estoque,
     };
   }
@@ -119,6 +122,7 @@ export class CatalogoService {
       tipo: 'S',
       preco: item.preco,
       unidade: '',
+      imagemUrl: urlImagem(item.imagemUrl),
       estoque: null,
     };
   }

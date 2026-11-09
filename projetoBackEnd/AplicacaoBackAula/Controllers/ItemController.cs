@@ -7,6 +7,7 @@ namespace AplicacaoBackAula.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Funcionario")]
     public class ItemController : ControllerBase
     {
         //DECLARAÇÃO DO ATRIBUTO DE CONTEXTO
@@ -19,6 +20,7 @@ namespace AplicacaoBackAula.Controllers
         }
 
         //DECLARAÇÃO DO MÉTODO PARA LISTAR TODOS OS ITENS (PRODUTOS E SERVIÇOS)
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ItemDTO>>> GetAll()
         {
@@ -33,7 +35,8 @@ namespace AplicacaoBackAula.Controllers
                     Preco = i.Preco,
                     TipoItem = i.TipoItem,
                     AtivoProdutoServico = i.AtivoProdutoServico,
-                    Categoria = i.IdcategoriaNavigation.Categoria
+                    Categoria = i.IdcategoriaNavigation.Categoria,
+                    ImagemUrl = _context.ImagensItem.Where(x => x.Iditem == i.Iditem).Select(x => "/imagens/itens/" + x.Arquivo).FirstOrDefault()
                 }).ToListAsync();
 
             return Ok(itens);
@@ -41,6 +44,7 @@ namespace AplicacaoBackAula.Controllers
         }//FIM MÉTODO GetAll
 
         //DECLARAÇÃO DO MÉTODO PARA BUSCAR UM ITEM PELO ID
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<ItemDTO>> GetItem(int id)
         {
@@ -55,7 +59,8 @@ namespace AplicacaoBackAula.Controllers
                     Preco = i.Preco,
                     TipoItem = i.TipoItem,
                     AtivoProdutoServico = i.AtivoProdutoServico,
-                    Categoria = i.IdcategoriaNavigation.Categoria
+                    Categoria = i.IdcategoriaNavigation.Categoria,
+                    ImagemUrl = _context.ImagensItem.Where(x => x.Iditem == i.Iditem).Select(x => "/imagens/itens/" + x.Arquivo).FirstOrDefault()
                 }).FirstOrDefaultAsync();
 
             //VERIFICA SE O ITEM EXISTE
@@ -234,6 +239,7 @@ namespace AplicacaoBackAula.Controllers
                     });
             }
 
+            await ImagemArquivos.ApagarDoItemAsync(_context, id);
             _context.Items.Remove(item);
             try
             {
